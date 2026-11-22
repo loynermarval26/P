@@ -72,7 +72,7 @@ Render desplegará la página automáticamente con cada cambio que subas a GitHu
      ```
    - **Start Command:**
      ```bash
-     gunicorn app:app
+     python -m gunicorn app:app
      ```
    - **Instance Type:** Elige el plan que desees de tu cuenta paga (Starter, Standard, etc.).
 5. En la sección **Environment Variables** (Variables de Entorno), añade:
