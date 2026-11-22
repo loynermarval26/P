@@ -245,8 +245,7 @@ def user_profile():
 
 @app.route('/marcas')
 def brands_list():
-    brands = db.get_all_brands()
-    return render_template('brands.html', brands=brands)
+    return redirect(url_for('catalog'))
 
 @app.route('/marca/<slug>')
 def brand_detail(slug):
