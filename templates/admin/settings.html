@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajustes de Tienda & WhatsApp | Admin {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-brand-emerald">Dashboard</a>
+        <span>/</span>
+        <span class="text-slate-300">Ajustes & WhatsApp</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Configuración de la Tienda</h1>
+            <p class="text-xs text-slate-400 mt-1">Configura tu número de WhatsApp para recibir pedidos directamente en tu móvil.</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Volver</span>
+        </a>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('admin_settings') }}" class="space-y-6">
+        
+        <!-- WhatsApp Settings Card -->
+        <div class="bg-dark-900 border border-emerald-500/30 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center gap-3 border-b border-dark-800 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-white">Número de WhatsApp del Vendedor</h2>
+                    <p class="text-xs text-slate-400">Todos los botones de "Consultar por WhatsApp" de la página dirigirán a este número.</p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">Número de WhatsApp (con código de país) *</label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        name="whatsapp_number" 
+                        required 
+                        value="{{ current_settings.whatsapp_number }}" 
+                        placeholder="Ej. 584121234567 o 34612345678" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-3 pl-10 pr-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-brand-emerald"
+                    >
+                    <i class="fa-brands fa-whatsapp absolute left-3.5 top-3.5 text-emerald-400 text-base"></i>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-400 space-y-1 bg-dark-950 p-3 rounded-xl border border-dark-800">
+                    <p class="font-semibold text-slate-300">💡 Formato internacional recomendado:</p>
+                    <p>• Incluye el código de país sin el signo "+" y sin guiones ni espacios.</p>
+                    <p>• <strong>Venezuela:</strong> 584120000000 / 584140000000 / 584240000000</p>
+                    <p>• <strong>España:</strong> 34600000000 | <strong>Colombia:</strong> 573000000000 | <strong>México:</strong> 5215500000000</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store General Settings Card -->
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h2 class="text-base font-bold text-white border-b border-dark-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-store text-brand-cyan"></i>
+                <span>Identidad de la Tienda</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre de la Tienda / Perfumería *</label>
+                    <input 
+                        type="text" 
+                        name="store_name" 
+                        required 
+                        value="{{ current_settings.store_name }}" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Símbolo de Moneda *</label>
+                    <input 
+                        type="text" 
+                        name="currency_symbol" 
+                        required 
+                        value="{{ current_settings.currency_symbol }}" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Eslogan / Subtítulo</label>
+                <input 
+                    type="text" 
+                    name="store_tagline" 
+                    value="{{ current_settings.store_tagline }}" 
+                    class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                >
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Texto de la Barra Superior de Anuncios</label>
+                <input 
+                    type="text" 
+                    name="announcement_bar" 
+                    value="{{ current_settings.announcement_bar }}" 
+                    class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                >
+            </div>
+        </div>
+
+        <!-- Security / PIN Settings Card -->
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h2 class="text-base font-bold text-white border-b border-dark-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-key text-amber-400"></i>
+                <span>Seguridad del Panel Administrador</span>
+            </h2>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Cambiar PIN de Acceso Administrador</label>
+                <input 
+                    type="text" 
+                    name="admin_pin" 
+                    required 
+                    value="{{ current_settings.admin_pin }}" 
+                    placeholder="1234" 
+                    class="w-48 bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-sm text-center font-bold tracking-widest text-amber-400 focus:outline-none focus:border-amber-400"
+                >
+                <p class="text-[11px] text-slate-500 mt-1">Este es el PIN que se solicitará para ingresar al panel desde tu teléfono o navegador.</p>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end gap-4 pb-8">
+            <button type="submit" class="px-8 py-3 rounded-xl bg-gradient-to-r from-brand-emerald to-brand-teal text-dark-950 font-bold text-sm shadow-xl shadow-brand-emerald/20 hover:opacity-95 transition">
+                Guardar Ajustes
+            </button>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

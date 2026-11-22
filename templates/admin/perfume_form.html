@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Editar Perfume' if perfume else 'Nuevo Perfume' }} | Admin {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-brand-emerald">Dashboard</a>
+        <span>/</span>
+        <a href="{{ url_for('admin_perfumes') }}" class="hover:text-brand-emerald">Inventario</a>
+        <span>/</span>
+        <span class="text-slate-300">{{ 'Editar ' ~ perfume.name if perfume else 'Añadir Nuevo Perfume' }}</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">
+                {{ 'Editar Perfume' if perfume else 'Añadir Nuevo Perfume' }}
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+                Completa los datos técnicos y pirámide olfativa estilo Fragrantica.
+            </p>
+        </div>
+        <a href="{{ url_for('admin_perfumes') }}" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Volver a lista</span>
+        </a>
+    </div>
+
+    <!-- Main Form -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        
+        <!-- Section 1: Basic Product Information -->
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 space-y-4 shadow-xl">
+            <h2 class="text-base font-bold text-white border-b border-dark-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bottle-droplet text-brand-emerald"></i>
+                <span>Información General del Perfume</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <!-- Nombre -->
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre del Perfume *</label>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        required 
+                        value="{{ perfume.name if perfume else '' }}" 
+                        placeholder="Ej. Sauvage, Bleu de Chanel, Aventus..." 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Marca -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-300">Marca / Casa *</label>
+                        <a href="{{ url_for('admin_brands') }}" target="_blank" class="text-[11px] text-brand-cyan hover:underline">+ Crear Marca</a>
+                    </div>
+                    <select 
+                        name="brand_id" 
+                        required 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="">Selecciona una marca...</option>
+                        {% for b in brands %}
+                        <option value="{{ b.id }}" {% if perfume and perfume.brand_id == b.id %}selected{% endif %}>
+                            {{ b.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Colección / Línea -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Colección / Línea (Opcional)</label>
+                    <select 
+                        name="collection_id" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="">Ninguna colección</option>
+                        {% for c in collections %}
+                        <option value="{{ c.id }}" {% if perfume and perfume.collection_id == c.id %}selected{% endif %}>
+                            {{ c.brand_name }} - {{ c.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Género -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Género *</label>
+                    <select 
+                        name="gender" 
+                        required 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="Hombre" {% if perfume and perfume.gender == 'Hombre' %}selected{% endif %}>Hombre (Pour Homme)</option>
+                        <option value="Mujer" {% if perfume and perfume.gender == 'Mujer' %}selected{% endif %}>Mujer (Pour Femme)</option>
+                        <option value="Unisex" {% if not perfume or perfume.gender == 'Unisex' %}selected{% endif %}>Unisex</option>
+                    </select>
+                </div>
+
+                <!-- Concentración -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Concentración *</label>
+                    <select 
+                        name="concentration" 
+                        required 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="Eau de Parfum" {% if not perfume or perfume.concentration == 'Eau de Parfum' %}selected{% endif %}>Eau de Parfum (EDP)</option>
+                        <option value="Eau de Toilette" {% if perfume and perfume.concentration == 'Eau de Toilette' %}selected{% endif %}>Eau de Toilette (EDT)</option>
+                        <option value="Parfum" {% if perfume and perfume.concentration == 'Parfum' %}selected{% endif %}>Parfum</option>
+                        <option value="Extrait de Parfum" {% if perfume and perfume.concentration == 'Extrait de Parfum' %}selected{% endif %}>Extrait de Parfum</option>
+                        <option value="Eau de Cologne" {% if perfume and perfume.concentration == 'Eau de Cologne' %}selected{% endif %}>Eau de Cologne (EDC)</option>
+                    </select>
+                </div>
+
+                <!-- Tamaño (ml) -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Tamaño en Mililitros (ml) *</label>
+                    <input 
+                        type="number" 
+                        name="size_ml" 
+                        required 
+                        value="{{ perfume.size_ml if perfume else 100 }}" 
+                        placeholder="100" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Familia Olfativa -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Familia Olfativa</label>
+                    <input 
+                        type="text" 
+                        name="olfactory_family" 
+                        value="{{ perfume.olfactory_family if perfume else '' }}" 
+                        placeholder="Ej. Oriental Amaderada, Cítrica Floral..." 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section 2: Stock, Pricing & Image -->
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 space-y-4 shadow-xl">
+            <h2 class="text-base font-bold text-white border-b border-dark-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-boxes-stacked text-brand-cyan"></i>
+                <span>Precios, Stock y Multimedia</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                
+                <!-- Precio Normal -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Precio Normal ($) *</label>
+                    <input 
+                        type="number" 
+                        step="0.01" 
+                        name="price" 
+                        required 
+                        value="{{ perfume.price if perfume else '' }}" 
+                        placeholder="120.00" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Precio Descuento -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Precio con Oferta ($) (Opcional)</label>
+                    <input 
+                        type="number" 
+                        step="0.01" 
+                        name="discount_price" 
+                        value="{{ perfume.discount_price if perfume and perfume.discount_price else '' }}" 
+                        placeholder="Opcional" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Estado de Stock -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Disponibilidad en Stock *</label>
+                    <select 
+                        name="in_stock" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-emerald font-semibold"
+                    >
+                        <option value="1" {% if not perfume or perfume.in_stock == 1 %}selected{% endif %}>✓ EN STOCK (Disponible)</option>
+                        <option value="0" {% if perfume and perfume.in_stock == 0 %}selected{% endif %}>✕ AGOTADO (Sin existencias)</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Image Upload & Preview -->
+            <div class="pt-4 border-t border-dark-800 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Subir Imagen desde el Teléfono / PC</label>
+                        <input 
+                            type="file" 
+                            name="image_file" 
+                            accept="image/*"
+                            onchange="previewImage(this)"
+                            class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-slate-300 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-emerald/20 file:text-brand-emerald hover:file:bg-brand-emerald/30 cursor-pointer"
+                        >
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">O pegar URL de imagen externa</label>
+                        <input 
+                            type="url" 
+                            name="image_url" 
+                            value="{{ perfume.image_url if perfume else '' }}" 
+                            placeholder="https://..." 
+                            class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                        >
+                    </div>
+                </div>
+
+                <!-- Preview container -->
+                <div id="imagePreviewContainer" class="{% if not perfume or not perfume.image_url %}hidden{% endif %} flex items-center gap-4 bg-dark-950 p-3 rounded-xl border border-dark-800">
+                    <img id="imagePreview" src="{{ perfume.image_url if perfume else '#' }}" alt="Vista previa" class="w-16 h-16 object-contain rounded-lg bg-dark-900 p-1">
+                    <span class="text-xs text-slate-400">Vista previa de la foto del frasco</span>
+                </div>
+            </div>
+
+            <!-- Featured Checkbox -->
+            <div class="pt-2">
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300">
+                    <input 
+                        type="checkbox" 
+                        name="is_featured" 
+                        value="1" 
+                        {% if perfume and perfume.is_featured == 1 %}checked{% endif %}
+                        class="w-4 h-4 rounded text-brand-emerald bg-dark-950 border-dark-750 focus:ring-brand-emerald"
+                    >
+                    <span>Mostrar en la sección "Perfumes Más Destacados" de la página principal</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Section 3: Fragrantica Pyramid & Accords -->
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-base font-bold text-white border-b border-dark-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-amber-400"></i>
+                <span>Pirámide Olfativa & Acordes Estilo Fragrantica</span>
+            </h2>
+
+            <!-- Acordes visual manager -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Acordes Principales (Barras de colores)</label>
+                <p class="text-[11px] text-slate-500 mb-3">Define los acordes olfativos que dan carácter a la fragancia con sus porcentajes e intensidades.</p>
+                
+                <input type="hidden" name="accords_json" id="accords_json" value="">
+                
+                <!-- List container -->
+                <div id="accordsListContainer" class="mb-4"></div>
+
+                <!-- Add accord mini-bar form -->
+                <div class="bg-dark-950 p-4 rounded-xl border border-dark-800 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                    <div class="sm:col-span-5">
+                        <label class="block text-[11px] text-slate-400 mb-1">Nombre del Acorde</label>
+                        <input type="text" id="new_accord_name" placeholder="Ej. Cítrico, Amaderado, Ámbar..." class="w-full bg-dark-900 border border-dark-700 rounded-lg py-1.5 px-2.5 text-xs text-white">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] text-slate-400 mb-1">Porcentaje</label>
+                        <input type="number" id="new_accord_percent" min="10" max="100" value="85" class="w-full bg-dark-900 border border-dark-700 rounded-lg py-1.5 px-2.5 text-xs text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] text-slate-400 mb-1">Color</label>
+                        <input type="color" id="new_accord_color" value="#10B981" class="w-full h-8 bg-dark-900 border border-dark-700 rounded-lg p-1 cursor-pointer">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <button type="button" id="btnAddAccord" class="w-full py-2 bg-brand-emerald text-dark-950 font-bold text-xs rounded-lg hover:bg-brand-teal transition">
+                            + Añadir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pirámide Olfativa (Notas de Salida, Corazón, Fondo) -->
+            <div class="space-y-4 pt-4 border-t border-dark-800">
+                <div class="text-xs font-semibold text-slate-300">Pirámide de Notas (Separar con comas):</div>
+
+                <!-- Salida -->
+                <div>
+                    <label class="block text-xs font-medium text-brand-cyan mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-wind text-[11px]"></i>
+                        <span>Notas de Salida (Top Notes)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="top_notes" 
+                        value="{{ perfume.top_notes|join(', ') if perfume and perfume.top_notes else '' }}" 
+                        placeholder="Ej. Bergamota de Calabria, Pimienta, Mandarina..." 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Corazón -->
+                <div>
+                    <label class="block text-xs font-medium text-pink-400 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-heart text-[11px]"></i>
+                        <span>Notas de Corazón (Heart / Middle Notes)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="heart_notes" 
+                        value="{{ perfume.heart_notes|join(', ') if perfume and perfume.heart_notes else '' }}" 
+                        placeholder="Ej. Lavanda, Jazmín, Pimienta rosa, Vetiver..." 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+
+                <!-- Fondo -->
+                <div>
+                    <label class="block text-xs font-medium text-amber-400 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-tree text-[11px]"></i>
+                        <span>Notas de Fondo (Base Notes)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="base_notes" 
+                        value="{{ perfume.base_notes|join(', ') if perfume and perfume.base_notes else '' }}" 
+                        placeholder="Ej. Ambroxan, Cedro, Vainilla, Almizcle, Ámbar..." 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-emerald"
+                    >
+                </div>
+            </div>
+
+            <!-- Estaciones & Ocasiones -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-dark-800">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Estaciones Recomendadas</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        {% for season in ['Primavera', 'Verano', 'Otoño', 'Invierno'] %}
+                        <label class="flex items-center gap-2 cursor-pointer bg-dark-950 p-2 rounded-lg border border-dark-800">
+                            <input 
+                                type="checkbox" 
+                                name="seasons" 
+                                value="{{ season }}" 
+                                {% if perfume and season in perfume.seasons %}checked{% endif %}
+                                class="w-3.5 h-3.5 text-brand-emerald bg-dark-900 border-dark-700 rounded"
+                            >
+                            <span>{{ season }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Momento y Ocasión</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        {% for occ in ['Día', 'Noche', 'Oficina', 'Citas'] %}
+                        <label class="flex items-center gap-2 cursor-pointer bg-dark-950 p-2 rounded-lg border border-dark-800">
+                            <input 
+                                type="checkbox" 
+                                name="occasions" 
+                                value="{{ occ }}" 
+                                {% if perfume and occ in perfume.occasions %}checked{% endif %}
+                                class="w-3.5 h-3.5 text-brand-emerald bg-dark-900 border-dark-700 rounded"
+                            >
+                            <span>{{ occ }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Longevidad, Estela, Año, Perfumista -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-4 border-t border-dark-800">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Duración en Piel</label>
+                    <input 
+                        type="text" 
+                        name="longevity" 
+                        value="{{ perfume.longevity if perfume else 'Moderada (6-8h)' }}" 
+                        placeholder="Ej. Muy Duradera (8-10h)" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white"
+                    >
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Estela / Proyección</label>
+                    <input 
+                        type="text" 
+                        name="sillage" 
+                        value="{{ perfume.sillage if perfume else 'Moderada' }}" 
+                        placeholder="Ej. Pesada, Moderada, Enorme" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white"
+                    >
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Año de Lanzamiento</label>
+                    <input 
+                        type="number" 
+                        name="year_released" 
+                        value="{{ perfume.year_released if perfume and perfume.year_released else '' }}" 
+                        placeholder="2023" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white"
+                    >
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Perfumista / Nariz</label>
+                    <input 
+                        type="text" 
+                        name="perfumer" 
+                        value="{{ perfume.perfumer if perfume else '' }}" 
+                        placeholder="Ej. François Demachy" 
+                        class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2 px-3 text-xs text-white"
+                    >
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="pt-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Descripción y Reseña del Perfume</label>
+                <textarea 
+                    name="description" 
+                    rows="4" 
+                    placeholder="Escribe la historia del perfume, sus características aromáticas o notas destacadas..." 
+                    class="w-full bg-dark-950 border border-dark-750 rounded-xl py-2.5 px-3 text-xs text-white leading-relaxed focus:outline-none focus:border-brand-emerald"
+                >{{ perfume.description if perfume else '' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end gap-4 pb-12">
+            <a href="{{ url_for('admin_perfumes') }}" class="px-5 py-3 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 text-xs font-semibold border border-dark-700">
+                Cancelar
+            </a>
+            <button type="submit" class="px-8 py-3 rounded-xl bg-gradient-to-r from-brand-emerald to-brand-teal text-dark-950 font-bold text-sm shadow-xl shadow-brand-emerald/20 hover:opacity-95 transition">
+                {{ 'Guardar Cambios del Perfume' if perfume else 'Publicar Perfume en el Catálogo' }}
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script>
+    // Initialize Accords Manager with existing perfume accords
+    const initialAccords = {{ perfume.accords|tojson if perfume and perfume.accords else '[]' }};
+    window.accordsMgr = new AccordsManager('accordsListContainer', 'accords_json', initialAccords);
+
+    document.getElementById('btnAddAccord').addEventListener('click', () => {
+        const nameInput = document.getElementById('new_accord_name');
+        const percentInput = document.getElementById('new_accord_percent');
+        const colorInput = document.getElementById('new_accord_color');
+
+        if (!nameInput.value.trim()) {
+            alert('Ingresa el nombre del acorde.');
+            return;
+        }
+
+        window.accordsMgr.add(nameInput.value, colorInput.value, percentInput.value);
+        nameInput.value = '';
+    });
+</script>
+{% endblock %}

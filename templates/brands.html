@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Directorio de Marcas & Casas de Perfumería | {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6">
+        <a href="{{ url_for('index') }}" class="hover:text-brand-emerald">Inicio</a>
+        <span>/</span>
+        <span class="text-slate-300">Marcas y Casas de Perfumería</span>
+    </nav>
+
+    <div class="mb-10 text-center max-w-2xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white">Casas de Perfumería</h1>
+        <p class="text-sm text-slate-400 mt-2">
+            Explora las colecciones por casa diseñadora o de nicho internacional.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for brand in brands %}
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 hover:border-brand-emerald/40 transition group flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded bg-dark-950 text-brand-cyan border border-brand-cyan/20">
+                        {{ brand.country or 'Internacional' }}
+                    </span>
+                    <span class="text-xs text-slate-500">
+                        {{ brand.perfume_count }} fragancia{{ 's' if brand.perfume_count != 1 else '' }}
+                    </span>
+                </div>
+                <h3 class="text-xl font-bold text-white group-hover:text-brand-emerald transition">
+                    <a href="{{ url_for('brand_detail', slug=brand.slug) }}">
+                        {{ brand.name }}
+                    </a>
+                </h3>
+                {% if brand.description %}
+                <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+                    {{ brand.description }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-dark-800 flex items-center justify-between">
+                <a href="{{ url_for('brand_detail', slug=brand.slug) }}" class="text-xs font-bold text-brand-emerald hover:underline flex items-center gap-1">
+                    <span>Ver fragancias</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

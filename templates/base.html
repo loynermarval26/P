@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FRAGRANTICA | {{ settings.store_name }}{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        frag: {
+                            dark: '#121214',
+                            header: '#18181b',
+                            card: '#1c1c21',
+                            cardHover: '#24242a',
+                            pill: '#26262b',
+                            border: '#27272f',
+                            teal: '#00c49f',
+                            cyan: '#06b6d4',
+                            red: '#e11d48',
+                            amber: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-frag-dark text-slate-100 min-h-screen flex flex-col antialiased selection:bg-frag-teal selection:text-black">
+
+    <!-- Top Main Header (Fragrantica Exact Style) -->
+    <header class="bg-frag-header border-b border-frag-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-4">
+                
+                <!-- Logo: Red Bird + FRAGRANTICA (FREE TO CHOOSE) -->
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <a href="{{ url_for('index') }}" class="flex items-center gap-2.5 group">
+                        <!-- Hummingbird emblem -->
+                        <div class="w-8 h-8 rounded-full bg-frag-red flex items-center justify-center text-white shadow-md shadow-frag-red/30 group-hover:scale-105 transition">
+                            <i class="fa-solid fa-dove text-sm"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-base sm:text-lg font-extrabold tracking-wider text-white uppercase font-sans">
+                                FRAGRANTICA
+                            </span>
+                            <span class="text-[8px] font-bold tracking-widest text-frag-red uppercase -mt-1">
+                                FREE TO CHOOSE
+                            </span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Links (Noticias, Fragancias, Notas, Feed, Foro, Fragram, About) -->
+                <nav class="hidden lg:flex items-center gap-6 text-[13px] font-medium text-slate-300">
+                    <a href="{{ url_for('catalog') }}" class="hover:text-white transition">Noticias</a>
+                    
+                    <!-- Fragancias Dropdown -->
+                    <div class="relative group">
+                        <button class="hover:text-white transition flex items-center gap-1 py-2">
+                            <span>Fragancias</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-white transition"></i>
+                        </button>
+                        <div class="absolute left-0 mt-1 w-48 bg-frag-card border border-frag-border rounded-xl shadow-2xl py-2 hidden group-hover:block z-50">
+                            <a href="{{ url_for('catalog') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Todas las Fragancias</a>
+                            <a href="{{ url_for('catalog', genero='Hombre') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Para Hombre</a>
+                            <a href="{{ url_for('catalog', genero='Mujer') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Para Mujer</a>
+                            <a href="{{ url_for('catalog', genero='Unisex') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Nicho & Unisex</a>
+                            <div class="border-t border-frag-border my-1"></div>
+                            <a href="{{ url_for('brands_list') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Ver por Diseñador / Casas</a>
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('catalog', q='Vainilla') }}" class="hover:text-white transition">Notas</a>
+                    <a href="{{ url_for('index') }}" class="hover:text-white transition {% if request.endpoint == 'index' %}text-frag-teal font-semibold{% endif %}">Feed</a>
+                    <a href="{{ url_for('brands_list') }}" class="hover:text-white transition">Marcas</a>
+                    <a href="#fragram" class="hover:text-white transition">Fragram</a>
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="hover:text-white transition">Contacto</a>
+                </nav>
+
+                <!-- Right Actions: Day/Night pill, Search, User/Admin -->
+                <div class="flex items-center gap-3">
+                    
+                    <!-- Day/Night Toggle Pill (Exact Fragrantica Style) -->
+                    <div class="hidden sm:flex items-center bg-[#242428] border border-frag-border rounded-full p-0.5 px-1.5 gap-1.5 cursor-pointer" title="Modo Oscuro Activo">
+                        <span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]">
+                            <i class="fa-solid fa-sun"></i>
+                        </span>
+                        <span class="w-4 h-4 rounded-full bg-indigo-500/40 text-indigo-300 flex items-center justify-center text-[10px]">
+                            <i class="fa-solid fa-moon"></i>
+                        </span>
+                    </div>
+
+                    <!-- Direct WhatsApp Seller Header Button -->
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20quisiera%20consultar%20sobre%20su%20catálogo%20de%20perfumes" 
+                       target="_blank" 
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition"
+                       title="Atención directa por WhatsApp">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span class="hidden md:inline">WhatsApp</span>
+                    </a>
+
+                    <!-- Admin or Profile Icon -->
+                    {% if is_admin_logged_in %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="px-2.5 py-1 bg-frag-teal/10 text-frag-teal border border-frag-teal/30 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span class="hidden sm:inline">Admin</span>
+                    </a>
+                    <a href="{{ url_for('admin_logout') }}" title="Cerrar sesión" class="text-slate-400 hover:text-rose-400 text-xs p-1">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('admin_login') }}" title="Acceso Dueño / Admin" class="text-slate-400 hover:text-white p-1 text-sm transition">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    {% endif %}
+
+                    <!-- Mobile Menu Hamburger -->
+                    <button id="mobileMenuBtn" class="lg:hidden text-slate-400 hover:text-white p-1 focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-frag-header border-b border-frag-border px-4 pt-2 pb-4 space-y-2 text-xs">
+            <a href="{{ url_for('index') }}" class="block py-2 text-slate-200 hover:text-frag-teal">Feed & Inicio</a>
+            <a href="{{ url_for('catalog') }}" class="block py-2 text-slate-200 hover:text-frag-teal">Catálogo de Fragancias</a>
+            <div class="grid grid-cols-3 gap-2 py-2 border-y border-frag-border text-center">
+                <a href="{{ url_for('catalog', genero='Hombre') }}" class="py-1 rounded bg-frag-dark text-cyan-400 font-medium">Hombre</a>
+                <a href="{{ url_for('catalog', genero='Mujer') }}" class="py-1 rounded bg-frag-dark text-pink-400 font-medium">Mujer</a>
+                <a href="{{ url_for('catalog', genero='Unisex') }}" class="py-1 rounded bg-frag-dark text-amber-400 font-medium">Unisex</a>
+            </div>
+            <a href="{{ url_for('brands_list') }}" class="block py-2 text-slate-200 hover:text-frag-teal">Marcas</a>
+            <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">
+                <i class="fa-brands fa-whatsapp"></i> Contactar por WhatsApp
+            </a>
+            {% if is_admin_logged_in %}
+            <div class="pt-2 border-t border-frag-border">
+                <a href="{{ url_for('admin_dashboard') }}" class="block py-1 text-frag-teal font-medium">Panel de Control (Admin)</a>
+                <a href="{{ url_for('admin_logout') }}" class="block py-1 text-rose-400">Cerrar Sesión</a>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Sub-bar: Feed Banner (Fragrantica Exact Style) -->
+    <div class="bg-[#141416] border-b border-frag-border py-2 px-4 text-xs">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3 overflow-hidden text-slate-300">
+                <span class="px-2.5 py-0.5 rounded bg-[#2b2b32] text-white font-semibold text-[11px] flex-shrink-0">
+                    Feed
+                </span>
+                <span class="truncate text-slate-400">
+                    De qué está hablando la comunidad ahora mismo • Catálogo exclusivo y venta directa por WhatsApp
+                </span>
+            </div>
+            <a href="{{ url_for('catalog') }}" class="text-frag-teal hover:underline font-semibold flex-shrink-0 flex items-center gap-1 text-[11px] ml-4">
+                <span>Abrir el Feed</span>
+                <i class="fa-solid fa-angle-right text-[10px]"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Input Bar under Header (Fragrantica Exact Style) -->
+    <div class="bg-frag-dark border-b border-frag-border py-2.5 px-4">
+        <div class="max-w-7xl mx-auto">
+            <form action="{{ url_for('catalog') }}" method="GET" class="relative flex items-center">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Buscar perfumes, artículos, diseñadores, notas (ej. Sauvage, Vainilla)..." 
+                        value="{{ request.args.get('q', '') }}"
+                        class="w-full bg-[#1e1e23] border border-frag-border rounded-xl py-2 pl-10 pr-32 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-frag-teal focus:ring-1 focus:ring-frag-teal transition"
+                    >
+                    <!-- Right search bar tools -->
+                    <div class="absolute right-2 top-1.5 flex items-center gap-2">
+                        <span class="hidden sm:inline-block px-2 py-0.5 rounded bg-black/40 text-[10px] text-slate-400 font-mono border border-slate-700/50">
+                            Ctrl K
+                        </span>
+                        <a href="{{ url_for('catalog') }}" class="px-3 py-1 bg-[#2b2b32] hover:bg-[#34343d] text-slate-200 text-xs font-semibold rounded-lg flex items-center gap-1 transition">
+                            <span>Estoy buscando</span>
+                            <span>🧴</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Flash Alerts -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-alert mb-3 p-3 rounded-xl border flex items-center justify-between text-xs transition-opacity duration-300
+                        {% if category == 'success' %} bg-emerald-950/80 border-emerald-500/50 text-emerald-200
+                        {% elif category == 'danger' %} bg-rose-950/80 border-rose-500/50 text-rose-200
+                        {% elif category == 'warning' %} bg-amber-950/80 border-amber-500/50 text-amber-200
+                        {% else %} bg-sky-950/80 border-sky-500/50 text-sky-200 {% endif %}">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20vi%20su%20catálogo%20en%20línea%20y%20quisiera%20más%20información%20sobre%20sus%20perfumes" 
+       target="_blank" 
+       class="floating-whatsapp group" 
+       title="Escríbenos a WhatsApp">
+        <div class="pulse-ring"></div>
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- Footer (Fragrantica Exact Style) -->
+    <footer class="bg-frag-header border-t border-frag-border mt-16 pt-12 pb-8 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Fragrantica / Store Info -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-frag-red flex items-center justify-center text-white">
+                            <i class="fa-solid fa-dove text-xs"></i>
+                        </div>
+                        <span class="text-sm font-bold text-white tracking-wider">FRAGRANTICA • AROMALUXE</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        {{ settings.store_tagline }}
+                    </p>
+                    <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Atención directa vía WhatsApp</span>
+                    </div>
+                </div>
+
+                <!-- Explorar -->
+                <div>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <span class="frag-bar-teal"></span>
+                        <span>Explorar</span>
+                    </h4>
+                    <ul class="space-y-2 text-[11px]">
+                        <li><a href="{{ url_for('catalog') }}" class="hover:text-frag-teal transition">Todas las Fragancias</a></li>
+                        <li><a href="{{ url_for('catalog', genero='Hombre') }}" class="hover:text-frag-teal transition">Perfumes de Hombre</a></li>
+                        <li><a href="{{ url_for('catalog', genero='Mujer') }}" class="hover:text-frag-teal transition">Perfumes de Mujer</a></li>
+                        <li><a href="{{ url_for('catalog', genero='Unisex') }}" class="hover:text-frag-teal transition">Perfumes Unisex & Nicho</a></li>
+                        <li><a href="{{ url_for('brands_list') }}" class="hover:text-frag-teal transition">Casas Diseñadoras</a></li>
+                    </ul>
+                </div>
+
+                <!-- Familias Olfativas -->
+                <div>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <span class="frag-bar-red"></span>
+                        <span>Familias Olfativas</span>
+                    </h4>
+                    <ul class="space-y-2 text-[11px]">
+                        <li><a href="{{ url_for('catalog', acorde='Amaderado') }}" class="hover:text-frag-teal transition">Amaderados & Nobles</a></li>
+                        <li><a href="{{ url_for('catalog', acorde='Cítrico') }}" class="hover:text-frag-teal transition">Cítricos & Frescos</a></li>
+                        <li><a href="{{ url_for('catalog', acorde='Ámbar') }}" class="hover:text-frag-teal transition">Ámbar & Especiados</a></li>
+                        <li><a href="{{ url_for('catalog', acorde='Avainillado') }}" class="hover:text-frag-teal transition">Gourmand & Dulces</a></li>
+                        <li><a href="{{ url_for('catalog', acorde='Marino') }}" class="hover:text-frag-teal transition">Acuáticos & Marinos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Admin & Enlace -->
+                <div>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3">Panel de Dueño</h4>
+                    <p class="text-[11px] text-slate-400 mb-3">
+                        Administra el inventario, añade nuevos perfumes y cambia el stock directamente desde tu celular.
+                    </p>
+                    <a href="{{ url_for('admin_login') }}" class="px-3 py-1.5 rounded-lg bg-frag-card hover:bg-frag-cardHover border border-frag-border text-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-lock text-[10px]"></i>
+                        <span>Panel Administrador</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-frag-border pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+                <div>&copy; 2026 Fragrantica & AromaLuxe. Diseño inspirado en la comunidad de fragancias.</div>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-slate-400">Términos</a>
+                    <a href="#" class="hover:text-slate-400">Privacidad</a>
+                    <a href="{{ url_for('admin_login') }}" class="hover:text-frag-teal">Acceso Admin</a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo & Buscador de Perfumes | {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6">
+        <a href="{{ url_for('index') }}" class="hover:text-brand-emerald">Inicio</a>
+        <span>/</span>
+        <span class="text-slate-300">Catálogo de Fragancias</span>
+    </nav>
+
+    <!-- Page Header & Title -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-white flex items-center gap-3">
+                <i class="fa-solid fa-compass text-brand-emerald"></i>
+                <span>Catálogo & Buscador Específico</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">
+                Filtra por notas, acordes, casa de perfumería o disponibilidad en tiempo real.
+            </p>
+        </div>
+        <div class="text-xs text-slate-400 bg-dark-900 border border-dark-800 rounded-lg px-3 py-2 self-start md:self-auto">
+            Mostrando <strong class="text-white">{{ perfumes|length }}</strong> de <strong class="text-brand-emerald">{{ total_count }}</strong> fragancias
+        </div>
+    </div>
+
+    <!-- Filter & Search Controls Bar -->
+    <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 mb-8 shadow-xl">
+        <form action="{{ url_for('catalog') }}" method="GET" id="filterForm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Search text -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Buscar por nombre o nota</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            value="{{ search }}" 
+                            placeholder="Ej. Sauvage, Vainilla, Bergamota..." 
+                            class="w-full bg-dark-950 border border-dark-800 rounded-xl py-2 pl-9 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-emerald"
+                        >
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Brand Dropdown -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Marca / Casa</label>
+                    <select 
+                        name="marca" 
+                        onchange="document.getElementById('filterForm').submit()"
+                        class="w-full bg-dark-950 border border-dark-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="">Todas las marcas</option>
+                        {% for b in all_brands %}
+                        <option value="{{ b.id }}" {% if selected_brand == b.id %}selected{% endif %}>
+                            {{ b.name }} ({{ b.perfume_count }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Accord Filter Dropdown -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Acorde Principal</label>
+                    <select 
+                        name="acorde" 
+                        onchange="document.getElementById('filterForm').submit()"
+                        class="w-full bg-dark-950 border border-dark-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="">Todos los acordes</option>
+                        <option value="Amaderado" {% if selected_accord == 'Amaderado' %}selected{% endif %}>Amaderado</option>
+                        <option value="Cítrico" {% if selected_accord == 'Cítrico' %}selected{% endif %}>Cítrico</option>
+                        <option value="Ámbar" {% if selected_accord == 'Ámbar' %}selected{% endif %}>Ámbar</option>
+                        <option value="Marino" {% if selected_accord == 'Marino' %}selected{% endif %}>Marino / Acuático</option>
+                        <option value="Avainillado" {% if selected_accord == 'Avainillado' %}selected{% endif %}>Avainillado / Dulce</option>
+                        <option value="Floral" {% if selected_accord == 'Floral' %}selected{% endif %}>Floral</option>
+                        <option value="Especiado Fresco" {% if selected_accord == 'Especiado Fresco' %}selected{% endif %}>Especiado Fresco</option>
+                        <option value="Aromático" {% if selected_accord == 'Aromático' %}selected{% endif %}>Aromático</option>
+                        <option value="Cuero" {% if selected_accord == 'Cuero' %}selected{% endif %}>Cuero</option>
+                        <option value="Tabaco" {% if selected_accord == 'Tabaco' %}selected{% endif %}>Tabaco</option>
+                    </select>
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Ordenar por</label>
+                    <select 
+                        name="orden" 
+                        onchange="document.getElementById('filterForm').submit()"
+                        class="w-full bg-dark-950 border border-dark-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-brand-emerald"
+                    >
+                        <option value="featured" {% if selected_order == 'featured' %}selected{% endif %}>Destacados</option>
+                        <option value="price_asc" {% if selected_order == 'price_asc' %}selected{% endif %}>Precio: Menor a Mayor</option>
+                        <option value="price_desc" {% if selected_order == 'price_desc' %}selected{% endif %}>Precio: Mayor a Menor</option>
+                        <option value="name_asc" {% if selected_order == 'name_asc' %}selected{% endif %}>Nombre: A - Z</option>
+                        <option value="newest" {% if selected_order == 'newest' %}selected{% endif %}>Más Nuevos</option>
+                        <option value="rating" {% if selected_order == 'rating' %}selected{% endif %}>Mejor Calificados</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Second Row: Gender & Stock Filter Checkbox -->
+            <div class="mt-4 pt-4 border-t border-dark-800 flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- Gender Pills -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-400 mr-1">Género:</span>
+                    <a href="{{ url_for('catalog', q=search, marca=selected_brand, acorde=selected_accord, stock=1 if in_stock_only else None, orden=selected_order) }}"
+                       class="px-3 py-1 rounded-lg text-xs font-semibold transition {% if not selected_gender %}bg-brand-emerald text-dark-950{% else %}bg-dark-950 text-slate-400 hover:text-white{% endif %}">
+                        Todos
+                    </a>
+                    <a href="{{ url_for('catalog', q=search, marca=selected_brand, acorde=selected_accord, stock=1 if in_stock_only else None, orden=selected_order, genero='Hombre') }}"
+                       class="px-3 py-1 rounded-lg text-xs font-semibold transition {% if selected_gender == 'Hombre' %}bg-brand-blue text-white{% else %}bg-dark-950 text-slate-400 hover:text-white{% endif %}">
+                        Hombre
+                    </a>
+                    <a href="{{ url_for('catalog', q=search, marca=selected_brand, acorde=selected_accord, stock=1 if in_stock_only else None, orden=selected_order, genero='Mujer') }}"
+                       class="px-3 py-1 rounded-lg text-xs font-semibold transition {% if selected_gender == 'Mujer' %}bg-pink-600 text-white{% else %}bg-dark-950 text-slate-400 hover:text-white{% endif %}">
+                        Mujer
+                    </a>
+                    <a href="{{ url_for('catalog', q=search, marca=selected_brand, acorde=selected_accord, stock=1 if in_stock_only else None, orden=selected_order, genero='Unisex') }}"
+                       class="px-3 py-1 rounded-lg text-xs font-semibold transition {% if selected_gender == 'Unisex' %}bg-amber-600 text-white{% else %}bg-dark-950 text-slate-400 hover:text-white{% endif %}">
+                        Unisex
+                    </a>
+                </div>
+
+                <!-- Stock Switch and Submit -->
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300">
+                        <input 
+                            type="checkbox" 
+                            name="stock" 
+                            value="1" 
+                            {% if in_stock_only %}checked{% endif %}
+                            onchange="document.getElementById('filterForm').submit()"
+                            class="w-4 h-4 rounded text-brand-emerald bg-dark-950 border-dark-800 focus:ring-brand-emerald focus:ring-offset-0"
+                        >
+                        <span>Solo en Stock</span>
+                    </label>
+
+                    <button type="submit" class="px-4 py-1.5 rounded-lg bg-brand-emerald text-dark-950 font-bold text-xs hover:bg-brand-teal transition">
+                        Filtrar
+                    </button>
+
+                    {% if search or selected_brand or selected_gender or selected_accord or in_stock_only %}
+                    <a href="{{ url_for('catalog') }}" class="text-xs text-rose-400 hover:underline">
+                        Limpiar filtros
+                    </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- Perfumes Grid -->
+    {% if perfumes %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for perfume in perfumes %}
+        <div class="perfume-card flex flex-col justify-between overflow-hidden group">
+            <div>
+                <!-- Image Header -->
+                <div class="relative bg-dark-900/60 p-4 flex items-center justify-center overflow-hidden h-64">
+                    <img 
+                        src="{{ perfume.image_url }}" 
+                        alt="{{ perfume.name }}"
+                        class="max-h-56 w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                    >
+                    
+                    <!-- Stock badge -->
+                    <div class="absolute top-3 left-3">
+                        {% if perfume.in_stock == 1 %}
+                        <span class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-emerald-950/90 text-emerald-400 border border-emerald-500/30 backdrop-blur-sm">
+                            En Stock
+                        </span>
+                        {% else %}
+                        <span class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-rose-950/90 text-rose-400 border border-rose-500/30 backdrop-blur-sm">
+                            Agotado
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Concentration badge -->
+                    <div class="absolute top-3 right-3">
+                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded bg-dark-950/80 text-brand-cyan border border-brand-cyan/20">
+                            {{ perfume.concentration }}
+                        </span>
+                    </div>
+
+                    <!-- Gender badge -->
+                    <div class="absolute bottom-3 left-3">
+                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded bg-dark-950/80 text-slate-300">
+                            {{ perfume.gender }} • {{ perfume.size_ml }}ml
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Info Body -->
+                <div class="p-5">
+                    <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="text-xs font-semibold uppercase tracking-wider text-brand-cyan hover:underline">
+                        {{ perfume.brand_name }}
+                    </a>
+                    <h3 class="text-base font-bold text-white mt-1 hover:text-brand-emerald transition line-clamp-1">
+                        <a href="{{ url_for('perfume_detail', slug=perfume.slug) }}">
+                            {{ perfume.name }}
+                        </a>
+                    </h3>
+
+                    <!-- Fragrantica Accord Mini-Bars -->
+                    {% if perfume.accords %}
+                    <div class="mt-3 space-y-1">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Acordes:</div>
+                        <div class="space-y-1">
+                            {% for acc in perfume.accords[:3] %}
+                            <div class="relative h-4 rounded bg-dark-950 overflow-hidden flex items-center px-2 text-[10px] font-semibold text-white shadow-inner">
+                                <div class="absolute left-0 top-0 bottom-0 opacity-70" style="width: {{ acc.percent }}%; background-color: {{ acc.color }};"></div>
+                                <span class="relative z-10 drop-shadow">{{ acc.name }}</span>
+                                <span class="relative z-10 ml-auto text-[9px] opacity-80">{{ acc.percent }}%</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Rating & Family -->
+                    <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                        <span class="truncate max-w-[140px] text-[11px] text-slate-400" title="{{ perfume.olfactory_family }}">
+                            <i class="fa-solid fa-leaf text-brand-emerald text-[10px] mr-1"></i>
+                            {{ perfume.olfactory_family or 'Aromático' }}
+                        </span>
+                        <div class="flex items-center gap-1 text-amber-400 font-semibold text-xs">
+                            <i class="fa-solid fa-star text-[11px]"></i>
+                            <span>{{ "%.1f"|format(perfume.rating) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price & WhatsApp Action Footer -->
+            <div class="p-5 pt-0 border-t border-dark-800/60 mt-2">
+                <div class="flex items-center justify-between mb-3 pt-3">
+                    <div>
+                        {% if perfume.discount_price %}
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-lg font-extrabold text-white">${{ "%.2f"|format(perfume.discount_price) }}</span>
+                            <span class="text-xs text-slate-500 line-through">${{ "%.2f"|format(perfume.price) }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-lg font-extrabold text-white">${{ "%.2f"|format(perfume.price) }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('perfume_detail', slug=perfume.slug) }}" class="text-xs text-brand-emerald hover:underline font-medium">
+                        Ver ficha &rarr;
+                    </a>
+                </div>
+
+                <!-- WhatsApp Button -->
+                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=¡Hola!%20Me%20interesa%20el%20perfume%20*{{ perfume.name|urlencode }}*%20de%20*{{ perfume.brand_name|urlencode }}*%20({{ perfume.concentration }}%20{{ perfume.size_ml }}ml).%20Precio:%20${{ perfume.discount_price if perfume.discount_price else perfume.price }}.%20¿Tienen%20disponibilidad?" 
+                   target="_blank" 
+                   class="btn-whatsapp w-full py-2.5 text-xs">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Consultar por WhatsApp</span>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-20 bg-dark-900/50 border border-dark-800 rounded-2xl p-8">
+        <div class="w-16 h-16 rounded-full bg-dark-850 flex items-center justify-center mx-auto mb-4 text-slate-500 text-2xl">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">No se encontraron perfumes</h3>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto mb-6">
+            No encontramos ningún perfume que coincida con los filtros seleccionados. Intenta buscar por otra nota o marca.
+        </p>
+        <a href="{{ url_for('catalog') }}" class="px-5 py-2.5 rounded-xl bg-brand-emerald text-dark-950 font-bold text-xs hover:bg-brand-teal transition">
+            Ver todas las fragancias
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

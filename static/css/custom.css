@@ -1,0 +1,266 @@
+/* Fragrantica Exact Replica & AromaLuxe Dark Luxury Theme */
+:root {
+  --bg-main: #121214;
+  --bg-header: #18181b;
+  --bg-card: #1c1c21;
+  --bg-card-hover: #24242a;
+  --bg-pill: #26262b;
+  --bg-pill-hover: #323238;
+  --border-subtle: #27272f;
+  --border-focus: #00c49f;
+  --text-main: #f4f4f5;
+  --text-muted: #9ca3af;
+  --frag-teal: #00c49f;
+  --frag-cyan: #06b6d4;
+  --frag-red: #e11d48;
+  --frag-gold: #f59e0b;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Atmospheric autumn/luxury background overlay like Fragrantica header */
+.frag-ambient-bg {
+  background-color: #121214;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(185, 28, 28, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(217, 119, 6, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.1) 0%, transparent 60%);
+  background-repeat: no-repeat;
+}
+
+/* Category section titles with colored vertical bar */
+.frag-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.frag-bar-red {
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background-color: #e11d48;
+  border-radius: 2px;
+}
+
+.frag-bar-teal {
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background-color: #00c49f;
+  border-radius: 2px;
+}
+
+/* Category Pills */
+.frag-pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background-color: var(--bg-pill);
+  color: #d1d5db;
+  font-size: 0.775rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.frag-pill:hover {
+  background-color: var(--bg-pill-hover);
+  color: #ffffff;
+  border-color: rgba(0, 196, 159, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Horizontal card in Fragrantica carousel */
+.frag-bottle-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.frag-bottle-card:hover {
+  background-color: var(--bg-card-hover);
+  border-color: rgba(0, 196, 159, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.6);
+}
+
+/* Fragrantica Sidebar cards */
+.frag-sidebar-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+/* Mini soundwave / activity bar chart */
+.activity-bar {
+  width: 3px;
+  background-color: #3f3f46;
+  border-radius: 1px;
+  transition: height 0.3s ease;
+}
+
+.activity-bar:hover, .activity-bar.active {
+  background-color: #00c49f;
+}
+
+/* Fragrantica Accord Bar Stack */
+.accord-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.accord-bar-item {
+  position: relative;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.accord-bar-item:hover {
+  transform: scale(1.02);
+}
+
+.accord-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  border-radius: 6px;
+}
+
+.accord-bar-label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Olfactory Pyramid styling */
+.pyramid-level {
+  background: rgba(24, 24, 27, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.note-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  background: rgba(30, 30, 36, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
+  transition: all 0.2s;
+}
+
+.note-badge:hover {
+  border-color: #00c49f;
+  color: #ffffff;
+  background: rgba(0, 196, 159, 0.15);
+}
+
+/* WhatsApp Buttons */
+.btn-whatsapp {
+  background-color: #25d366;
+  color: #ffffff;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+}
+
+.btn-whatsapp:hover {
+  background-color: #20ba5a;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
+  transform: translateY(-1px);
+}
+
+.floating-whatsapp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99;
+  background-color: #25d366;
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-whatsapp:hover {
+  transform: scale(1.1) rotate(5deg);
+  background-color: #22bf5b;
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #25d366;
+  opacity: 0.6;
+  animation: pulseAnimation 2s infinite;
+  z-index: -1;
+}
+
+@keyframes pulseAnimation {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #121214;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
