@@ -1,148 +1,290 @@
-/* Fragrantica Exact Replica & AromaLuxe Dark Luxury Theme */
+/* The Fragance´s - Luxury Perfumery Theme (Dual Light & Dark with Vibrant Accents) */
+
+/* ================= THEME VARIABLES ================= */
 :root {
+  --bg-main: #f8fafc;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-subtle: #f1f5f9;
+  --bg-pill: #e2e8f0;
+  --bg-pill-hover: #cbd5e1;
+  --border-subtle: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --frag-teal: #0d9488;
+  --frag-cyan: #0284c7;
+  --frag-red: #e11d48;
+  --frag-gold: #d97706;
+  --frag-purple: #7c3aed;
+}
+
+html.dark {
   --bg-main: #121214;
   --bg-header: #18181b;
   --bg-card: #1c1c21;
   --bg-card-hover: #24242a;
+  --bg-subtle: #151518;
   --bg-pill: #26262b;
   --bg-pill-hover: #323238;
   --border-subtle: #27272f;
-  --border-focus: #00c49f;
   --text-main: #f4f4f5;
   --text-muted: #9ca3af;
   --frag-teal: #00c49f;
   --frag-cyan: #06b6d4;
-  --frag-red: #e11d48;
-  --frag-gold: #f59e0b;
+  --frag-red: #f43f5e;
+  --frag-gold: #fbbf24;
+  --frag-purple: #a855f7;
 }
 
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
 
-/* Atmospheric autumn/luxury background overlay like Fragrantica header */
+/* ================= LIGHT MODE OVERRIDES FOR TAILWIND UTILITIES ================= */
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) .bg-frag-dark {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .bg-frag-header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+html:not(.dark) .bg-frag-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html:not(.dark) .bg-\[\#151518\],
+html:not(.dark) .bg-\[\#0e0e10\],
+html:not(.dark) .bg-\[\#141416\],
+html:not(.dark) .bg-\[\#1e1e23\],
+html:not(.dark) .bg-\[\#2b2b32\],
+html:not(.dark) .bg-\[\#242429\],
+html:not(.dark) .bg-\[\#242428\] {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .text-white {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .text-slate-100 {
+  color: #1e293b !important;
+}
+
+html:not(.dark) .text-slate-200 {
+  color: #334155 !important;
+}
+
+html:not(.dark) .text-slate-300 {
+  color: #475569 !important;
+}
+
+html:not(.dark) .text-slate-400 {
+  color: #64748b !important;
+}
+
+html:not(.dark) .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html:not(.dark) .border-frag-border {
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) #themeToggleBtn {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* ================= VIBRANT ATMOSPHERIC GLOWS & BACKGROUND ACCENTS ================= */
 .frag-ambient-bg {
-  background-color: #121214;
+  position: relative;
+  background-color: var(--bg-main);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(185, 28, 28, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 10%, rgba(217, 119, 6, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.1) 0%, transparent 60%);
+    radial-gradient(circle at 15% 10%, rgba(244, 63, 94, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.14) 0%, transparent 55%),
+    radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
   background-repeat: no-repeat;
 }
 
-/* Category section titles with colored vertical bar */
+/* Autumn / Luxury Atmosphere Banner Accent (similar to Fragrantica reference) */
+.frag-autumn-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 240px;
+  background: radial-gradient(ellipse at 50% -20%, rgba(217, 119, 6, 0.25), rgba(225, 29, 72, 0.18), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ================= SECTION HEADINGS & ACCENT BARS ================= */
 .frag-section-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.05rem;
+  gap: 10px;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #ffffff;
 }
 
 .frag-bar-red {
   display: inline-block;
   width: 4px;
-  height: 18px;
-  background-color: #e11d48;
-  border-radius: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, #f43f5e, #e11d48);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.5);
 }
 
 .frag-bar-teal {
   display: inline-block;
   width: 4px;
-  height: 18px;
-  background-color: #00c49f;
-  border-radius: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, #00c49f, #06b6d4);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(0, 196, 159, 0.5);
 }
 
-/* Category Pills */
+.frag-bar-gold {
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(to bottom, #fbbf24, #d97706);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+}
+
+.frag-bar-purple {
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(to bottom, #c084fc, #7c3aed);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+}
+
+/* ================= CATEGORY PILLS ================= */
 .frag-pill {
   display: inline-block;
   padding: 6px 14px;
   border-radius: 9999px;
   background-color: var(--bg-pill);
-  color: #d1d5db;
+  color: var(--text-main);
   font-size: 0.775rem;
-  font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
 
 .frag-pill:hover {
   background-color: var(--bg-pill-hover);
-  color: #ffffff;
-  border-color: rgba(0, 196, 159, 0.4);
-  transform: translateY(-1px);
+  color: var(--frag-teal);
+  border-color: var(--frag-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 196, 159, 0.25);
 }
 
-/* Horizontal card in Fragrantica carousel */
+/* ================= BOTTLE CARDS & SIDEBAR CARDS ================= */
 .frag-bottle-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+html.dark .frag-bottle-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .frag-bottle-card:hover {
   background-color: var(--bg-card-hover);
-  border-color: rgba(0, 196, 159, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.6);
+  border-color: rgba(0, 196, 159, 0.6);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.15), 0 0 18px -2px rgba(0, 196, 159, 0.3);
 }
 
-/* Fragrantica Sidebar cards */
+html.dark .frag-bottle-card:hover {
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.7), 0 0 20px -2px rgba(0, 196, 159, 0.35);
+}
+
 .frag-sidebar-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  padding: 18px;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
-/* Mini soundwave / activity bar chart */
-.activity-bar {
-  width: 3px;
-  background-color: #3f3f46;
-  border-radius: 1px;
-  transition: height 0.3s ease;
+html.dark .frag-sidebar-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.activity-bar:hover, .activity-bar.active {
-  background-color: #00c49f;
-}
-
-/* Fragrantica Accord Bar Stack */
+/* ================= ACCORD BAR STACK (FRAGRANTICA STYLE) ================= */
 .accord-bar-container {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .accord-bar-item {
   position: relative;
-  height: 28px;
-  border-radius: 6px;
+  height: 30px;
+  border-radius: 7px;
   overflow: hidden;
   display: flex;
   align-items: center;
   padding: 0 12px;
   font-size: 0.825rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .accord-bar-item:hover {
   transform: scale(1.02);
+  filter: brightness(1.1);
 }
 
 .accord-bar-fill {
@@ -151,7 +293,7 @@ body {
   left: 0;
   bottom: 0;
   z-index: 1;
-  border-radius: 6px;
+  border-radius: 7px;
 }
 
 .accord-bar-label {
@@ -162,12 +304,12 @@ body {
   width: 100%;
 }
 
-/* Olfactory Pyramid styling */
+/* ================= OLFACTORY PYRAMID ================= */
 .pyramid-level {
-  background: rgba(24, 24, 27, 0.8);
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 18px;
   transition: border-color 0.2s ease;
 }
 
@@ -175,40 +317,41 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.825rem;
-  font-weight: 500;
-  background: rgba(30, 30, 36, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e4e4e7;
+  font-weight: 600;
+  background: var(--bg-pill);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
   transition: all 0.2s;
 }
 
 .note-badge:hover {
-  border-color: #00c49f;
+  border-color: var(--frag-teal);
   color: #ffffff;
-  background: rgba(0, 196, 159, 0.15);
+  background: linear-gradient(135deg, rgba(0, 196, 159, 0.3), rgba(6, 182, 212, 0.3));
+  transform: translateY(-1px);
 }
 
-/* WhatsApp Buttons */
+/* ================= VIBRANT WHATSAPP BUTTONS ================= */
 .btn-whatsapp {
-  background-color: #25d366;
-  color: #ffffff;
-  font-weight: 600;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: #ffffff !important;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
 }
 
 .btn-whatsapp:hover {
-  background-color: #20ba5a;
-  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2ae06d 0%, #159b8c 100%);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.55);
+  transform: translateY(-1.5px);
 }
 
 .floating-whatsapp {
@@ -216,10 +359,10 @@ body {
   bottom: 24px;
   right: 24px;
   z-index: 99;
-  background-color: #25d366;
-  color: white;
-  width: 56px;
-  height: 56px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: white !important;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -229,8 +372,8 @@ body {
 }
 
 .floating-whatsapp:hover {
-  transform: scale(1.1) rotate(5deg);
-  background-color: #22bf5b;
+  transform: scale(1.1) rotate(6deg);
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.65);
 }
 
 .pulse-ring {
@@ -249,18 +392,18 @@ body {
   100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Custom scrollbars */
+/* ================= SCROLLBARS ================= */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #121214;
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--border-subtle);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #64748b;
 }

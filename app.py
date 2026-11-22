@@ -356,10 +356,11 @@ def admin_reviews():
 @app.route('/admin/resenas/eliminar/<int:id>', methods=['POST'])
 def admin_review_delete(id):
     if not is_admin():
-        return redirect(url_for('admin_login'))
+        flash("Acción no autorizada.", "danger")
+        return redirect(url_for('user_login'))
     db.delete_review(id)
     flash("Reseña eliminada del sistema.", "info")
-    return redirect(url_for('admin_reviews'))
+    return redirect(request.referrer or url_for('admin_reviews'))
 
 @app.route('/admin/perfumes')
 def admin_perfumes():

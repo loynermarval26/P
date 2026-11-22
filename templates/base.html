@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ settings.store_name }}{% endblock %} | Fragancias & Notas Olfativas</title>
+    
+    <!-- Theme Flash Prevention -->
+    <script>
+        if (localStorage.getItem('thefragances_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,16 +26,16 @@
                 extend: {
                     colors: {
                         frag: {
-                            dark: '#121214',
-                            header: '#18181b',
-                            card: '#1c1c21',
-                            cardHover: '#24242a',
-                            pill: '#26262b',
-                            border: '#27272f',
-                            teal: '#00c49f',
-                            cyan: '#06b6d4',
-                            red: '#e11d48',
-                            amber: '#f59e0b'
+                            dark: 'var(--bg-main)',
+                            header: 'var(--bg-header)',
+                            card: 'var(--bg-card)',
+                            cardHover: 'var(--bg-card-hover)',
+                            pill: 'var(--bg-pill)',
+                            border: 'var(--border-subtle)',
+                            teal: 'var(--frag-teal)',
+                            cyan: 'var(--frag-cyan)',
+                            red: 'var(--frag-red)',
+                            amber: 'var(--frag-gold)'
                         }
                     }
                 }
@@ -39,15 +50,14 @@
 <body class="bg-frag-dark text-slate-100 min-h-screen flex flex-col antialiased selection:bg-frag-teal selection:text-black">
 
     <!-- Top Main Header (Fragrantica Exact Style with The Fragance´s Branding) -->
-    <header class="bg-frag-header border-b border-frag-border sticky top-0 z-50">
+    <header class="bg-frag-header border-b border-frag-border sticky top-0 z-50 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-14 sm:h-16 gap-4">
                 
-                <!-- Logo: Provisional Logo "The Fragance´s" -->
+                <!-- Logo: "The Fragance´s" with Diamond Bottle -->
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <a href="{{ url_for('index') }}" class="flex items-center gap-2.5 group">
-                        <!-- Custom Diamond Perfume Bottle Emblem -->
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-frag-teal/20 via-frag-cyan/10 to-indigo-900/30 border border-frag-teal/40 flex items-center justify-center text-frag-teal shadow-md shadow-frag-teal/20 group-hover:scale-105 transition">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-frag-teal via-frag-cyan to-indigo-600 flex items-center justify-center text-white shadow-md shadow-frag-teal/30 group-hover:scale-105 transition">
                             <i class="fa-solid fa-gem text-sm"></i>
                         </div>
                         <div class="flex flex-col">
@@ -61,15 +71,15 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links (Noticias, Fragancias, Notas, Feed, Marcas, Contacto) -->
+                <!-- Navigation Links (Sin botón Fragram) -->
                 <nav class="hidden lg:flex items-center gap-6 text-[13px] font-medium text-slate-300">
-                    <a href="{{ url_for('catalog') }}" class="hover:text-white transition">Noticias</a>
+                    <a href="{{ url_for('catalog') }}" class="hover:text-frag-teal transition">Noticias</a>
                     
                     <!-- Fragancias Dropdown -->
                     <div class="relative group">
-                        <button class="hover:text-white transition flex items-center gap-1 py-2">
+                        <button class="hover:text-frag-teal transition flex items-center gap-1 py-2">
                             <span>Fragancias</span>
-                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-white transition"></i>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-frag-teal transition"></i>
                         </button>
                         <div class="absolute left-0 mt-1 w-48 bg-frag-card border border-frag-border rounded-xl shadow-2xl py-2 hidden group-hover:block z-50">
                             <a href="{{ url_for('catalog') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Todas las Fragancias (20)</a>
@@ -81,43 +91,50 @@
                         </div>
                     </div>
 
-                    <a href="{{ url_for('catalog', q='Vainilla') }}" class="hover:text-white transition">Notas</a>
-                    <a href="{{ url_for('index') }}" class="hover:text-white transition {% if request.endpoint == 'index' %}text-frag-teal font-semibold{% endif %}">Feed</a>
-                    <a href="{{ url_for('brands_list') }}" class="hover:text-white transition">Marcas</a>
-                    <a href="#fragram" class="hover:text-white transition">Fragram</a>
-                    <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="hover:text-white transition">Contacto</a>
+                    <a href="{{ url_for('catalog', q='Vainilla') }}" class="hover:text-frag-teal transition">Notas</a>
+                    <a href="{{ url_for('index') }}" class="hover:text-frag-teal transition {% if request.endpoint == 'index' %}text-frag-teal font-semibold{% endif %}">Feed</a>
+                    <a href="{{ url_for('brands_list') }}" class="hover:text-frag-teal transition">Marcas</a>
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="hover:text-frag-teal transition">Contacto (+58 424-2567728)</a>
                 </nav>
 
-                <!-- Right Actions: Day/Night pill, Search, WhatsApp, Admin -->
+                <!-- Right Actions: Functional Day/Night Toggle, WhatsApp, User -->
                 <div class="flex items-center gap-3">
                     
-                    <!-- Day/Night Toggle Pill (Fragrantica Style) -->
-                    <div class="hidden sm:flex items-center bg-[#242428] border border-frag-border rounded-full p-0.5 px-1.5 gap-1.5 cursor-pointer" title="Modo Oscuro Activo">
-                        <span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]">
+                    <!-- Day/Night Toggle Pill (Fully Functional) -->
+                    <button 
+                        id="themeToggleBtn"
+                        type="button"
+                        class="flex items-center bg-[#242428] border border-frag-border rounded-full p-0.5 px-1.5 gap-1.5 cursor-pointer hover:border-frag-teal transition" 
+                        title="Cambiar Modo Claro / Oscuro"
+                    >
+                        <span id="themeSunIcon" class="w-4 h-4 rounded-full text-slate-500 flex items-center justify-center text-[10px]">
                             <i class="fa-solid fa-sun"></i>
                         </span>
-                        <span class="w-4 h-4 rounded-full bg-indigo-500/40 text-indigo-300 flex items-center justify-center text-[10px]">
+                        <span id="themeMoonIcon" class="w-4 h-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">
                             <i class="fa-solid fa-moon"></i>
                         </span>
-                    </div>
+                    </button>
 
-                    <!-- Direct WhatsApp Seller Header Button -->
+                    <!-- Direct WhatsApp Seller Button (+58 424-2567728) -->
                     <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20quisiera%20consultar%20sobre%20el%20catálogo%20de%20The%20Fragance´s" 
                        target="_blank" 
                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition"
                        title="Atención directa por WhatsApp">
                         <i class="fa-brands fa-whatsapp text-sm"></i>
-                        <span class="hidden md:inline">WhatsApp</span>
+                        <span class="hidden md:inline">+58 424-2567728</span>
                     </a>
 
-                    <!-- User Authentication / Profile / Admin -->
+                    <!-- User Authentication / Profile (Sin candado para usuarios no logueados) -->
                     {% if current_user %}
                     <div class="relative group">
                         <button class="flex items-center gap-2 py-1 px-2.5 rounded-xl bg-frag-card hover:bg-frag-cardHover border border-frag-border text-xs text-white transition">
-                            <div class="w-6 h-6 rounded-lg bg-frag-teal/20 text-frag-teal font-bold flex items-center justify-center text-[11px]">
+                            <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-frag-teal to-frag-cyan text-black font-bold flex items-center justify-center text-[11px]">
                                 {{ current_user.name[:1]|upper }}
                             </div>
                             <span class="font-semibold hidden sm:inline max-w-[90px] truncate">{{ current_user.name.split()[0] }}</span>
+                            {% if current_user.role == 'admin' %}
+                            <span class="px-1.5 py-0.2 rounded text-[8px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Admin</span>
+                            {% endif %}
                             <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                         </button>
                         <div class="absolute right-0 mt-1 w-44 bg-frag-card border border-frag-border rounded-xl shadow-2xl py-2 hidden group-hover:block z-50">
@@ -128,9 +145,10 @@
                             <a href="{{ url_for('user_profile') }}" class="block px-3 py-1.5 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">
                                 <i class="fa-regular fa-user mr-1.5 text-[11px]"></i> Mi Perfil
                             </a>
-                            {% if is_admin_logged_in %}
+                            <!-- Solo se muestra si es el dueño/admin -->
+                            {% if current_user.role == 'admin' or is_admin_logged_in %}
                             <a href="{{ url_for('admin_dashboard') }}" class="block px-3 py-1.5 text-xs text-frag-teal font-semibold hover:bg-frag-pill">
-                                <i class="fa-solid fa-sliders mr-1.5 text-[11px]"></i> Panel Admin
+                                <i class="fa-solid fa-sliders mr-1.5 text-[11px]"></i> Panel de Control
                             </a>
                             {% endif %}
                             <div class="border-t border-frag-border my-1"></div>
@@ -140,15 +158,13 @@
                         </div>
                     </div>
                     {% else %}
-                    <div class="flex items-center gap-1.5">
+                    <!-- Para visitantes: Solo Ingresar y Registrarse (SIN candados ni preguntas al dueño) -->
+                    <div class="flex items-center gap-2">
                         <a href="{{ url_for('user_login') }}" class="text-xs text-slate-300 hover:text-white px-2.5 py-1 rounded-lg hover:bg-frag-card transition font-medium">
                             Ingresar
                         </a>
-                        <a href="{{ url_for('user_register') }}" class="hidden sm:inline-block text-xs bg-frag-teal/15 hover:bg-frag-teal/25 text-frag-teal border border-frag-teal/30 px-3 py-1 rounded-lg transition font-bold">
+                        <a href="{{ url_for('user_register') }}" class="text-xs bg-gradient-to-r from-frag-teal to-frag-cyan text-black font-extrabold px-3 py-1 rounded-lg transition shadow-sm hover:opacity-95">
                             Registrarse
-                        </a>
-                        <a href="{{ url_for('admin_login') }}" title="Acceso Dueño / Admin" class="text-slate-500 hover:text-slate-300 p-1 text-xs transition">
-                            <i class="fa-solid fa-lock"></i>
                         </a>
                     </div>
                     {% endif %}
@@ -172,27 +188,27 @@
                 <a href="{{ url_for('catalog', genero='Unisex') }}" class="py-1 rounded bg-frag-dark text-amber-400 font-medium">Unisex (2)</a>
             </div>
             <a href="{{ url_for('brands_list') }}" class="block py-2 text-slate-200 hover:text-frag-teal">Marcas</a>
-            <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">
-                <i class="fa-brands fa-whatsapp"></i> Contactar por WhatsApp
+            <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp: +58 424-2567728
             </a>
-            {% if is_admin_logged_in %}
+            {% if current_user and current_user.role == 'admin' %}
             <div class="pt-2 border-t border-frag-border">
-                <a href="{{ url_for('admin_dashboard') }}" class="block py-1 text-frag-teal font-medium">Panel de Control (Admin)</a>
-                <a href="{{ url_for('admin_logout') }}" class="block py-1 text-rose-400">Cerrar Sesión</a>
+                <a href="{{ url_for('admin_dashboard') }}" class="block py-1 text-frag-teal font-medium">Panel de Control (Dueño)</a>
+                <a href="{{ url_for('user_logout') }}" class="block py-1 text-rose-400">Cerrar Sesión</a>
             </div>
             {% endif %}
         </div>
     </header>
 
     <!-- Sub-bar: Community Feed Announcement -->
-    <div class="bg-[#141416] border-b border-frag-border py-2 px-4 text-xs">
+    <div class="bg-[#141416] border-b border-frag-border py-2 px-4 text-xs transition-colors">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3 overflow-hidden text-slate-300">
                 <span class="px-2.5 py-0.5 rounded bg-[#2b2b32] text-white font-semibold text-[11px] flex-shrink-0">
                     Feed
                 </span>
                 <span class="truncate text-slate-400">
-                    The Fragance´s • Catálogo de perfumes de diseñador & árabes con atención directa por WhatsApp
+                    The Fragance´s • Catálogo de perfumería exclusiva. Pedidos directos vía WhatsApp: +58 424-2567728
                 </span>
             </div>
             <a href="{{ url_for('catalog') }}" class="text-frag-teal hover:underline font-semibold flex-shrink-0 flex items-center gap-1 text-[11px] ml-4">
@@ -203,7 +219,7 @@
     </div>
 
     <!-- Integrated Search Bar under Header -->
-    <div class="bg-frag-dark border-b border-frag-border py-2.5 px-4">
+    <div class="bg-frag-dark border-b border-frag-border py-2.5 px-4 transition-colors">
         <div class="max-w-7xl mx-auto">
             <form action="{{ url_for('catalog') }}" method="GET" class="relative flex items-center">
                 <div class="relative w-full">
@@ -255,11 +271,11 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Floating WhatsApp Button -->
+    <!-- Floating WhatsApp Button (+58 424-2567728) -->
     <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20vi%20su%20catálogo%20en%20línea%20en%20The%20Fragance´s%20y%20quisiera%20más%20información%20sobre%20un%20perfume" 
        target="_blank" 
        class="floating-whatsapp group" 
-       title="Escríbenos a WhatsApp">
+       title="Escríbenos a WhatsApp: +58 424-2567728">
         <div class="pulse-ring"></div>
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
@@ -269,10 +285,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <!-- Brand Info -->
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-frag-teal/20 border border-frag-teal/40 flex items-center justify-center text-frag-teal">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-frag-teal to-frag-cyan flex items-center justify-center text-black font-bold">
                             <i class="fa-solid fa-gem text-xs"></i>
                         </div>
                         <span class="text-sm font-bold text-white tracking-wider">{{ settings.store_name }}</span>
@@ -282,11 +297,10 @@
                     </p>
                     <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
                         <i class="fa-brands fa-whatsapp"></i>
-                        <span>Atención personalizada por WhatsApp</span>
+                        <span>WhatsApp: +58 424-2567728</span>
                     </div>
                 </div>
 
-                <!-- Explorar -->
                 <div>
                     <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
                         <span class="frag-bar-teal"></span>
@@ -301,7 +315,6 @@
                     </ul>
                 </div>
 
-                <!-- Familias Olfativas -->
                 <div>
                     <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
                         <span class="frag-bar-red"></span>
@@ -316,23 +329,25 @@
                     </ul>
                 </div>
 
-                <!-- Panel Dueño -->
                 <div>
-                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3">Gestión de Stock</h4>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3">Atención Directa</h4>
                     <p class="text-[11px] text-slate-400 mb-3">
-                        Administra el inventario, activa/desactiva stock y sube nuevos perfumes con el formato oficial desde tu móvil.
+                        Sin carritos de compra ni pasarelas engorrosas. Pedidos y asesoría personalizada directa por WhatsApp.
                     </p>
-                    <a href="{{ url_for('admin_login') }}" class="px-3 py-1.5 rounded-lg bg-frag-card hover:bg-frag-cardHover border border-frag-border text-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-lock text-[10px]"></i>
-                        <span>Panel Administrador</span>
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20quisiera%20asesoría%20sobre%20un%20perfume" 
+                       target="_blank" 
+                       class="btn-whatsapp w-full py-2 text-xs">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>Contactar por WhatsApp</span>
                     </a>
                 </div>
             </div>
 
             <div class="border-t border-frag-border pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
-                <div>&copy; 2026 {{ settings.store_name }}. Catálogo de perfumería con pirámides olfativas.</div>
+                <div>&copy; 2026 {{ settings.store_name }}. Catálogo exclusivo con pirámides olfativas.</div>
                 <div class="flex items-center gap-4">
-                    <a href="{{ url_for('admin_login') }}" class="hover:text-frag-teal">Acceso Admin (Dueño)</a>
+                    <a href="{{ url_for('catalog') }}" class="hover:text-slate-400">Catálogo</a>
+                    <a href="{{ url_for('user_login') }}" class="hover:text-frag-teal">Mi Cuenta</a>
                 </div>
             </div>
 

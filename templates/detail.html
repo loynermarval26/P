@@ -421,9 +421,19 @@
                                 Comprador
                             </span>
                         </div>
-                        <div class="flex items-center gap-1 text-amber-400 text-xs">
-                            {% for _ in range(r.rating) %}★{% endfor %}
-                            <span class="text-slate-500 text-[10px] ml-1">{{ r.created_at[:10] }}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                {% for _ in range(r.rating) %}★{% endfor %}
+                                <span class="text-slate-500 text-[10px] ml-1">{{ r.created_at[:10] }}</span>
+                            </div>
+                            {% if is_admin_logged_in %}
+                            <form method="POST" action="{{ url_for('admin_review_delete', id=r.id) }}" onsubmit="return confirm('¿Deseas eliminar esta reseña del sistema?');" class="inline">
+                                <button type="submit" class="px-2 py-0.5 rounded text-[10px] bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 transition flex items-center gap-1" title="Eliminar reseña (Admin)">
+                                    <i class="fa-solid fa-trash-can text-[9px]"></i>
+                                    <span>Eliminar</span>
+                                </button>
+                            </form>
+                            {% endif %}
                         </div>
                     </div>
                     <p class="text-xs text-slate-300 leading-relaxed pl-9">

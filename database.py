@@ -122,14 +122,14 @@ def init_db():
             VALUES (?, ?, ?, ?, ?)
         """, ('Administrador', 'admin@thefragances.com', hashed, '584121234567', 'admin'))
 
-    # Default settings
+    # Default settings with new WhatsApp +58 424-2567728
     default_settings = [
         ('store_name', 'The Fragance´s'),
         ('store_tagline', 'Alta perfumería, notas olfativas y catálogo exclusivo con atención directa por WhatsApp'),
-        ('whatsapp_number', '584121234567'),
+        ('whatsapp_number', '584242567728'),
         ('currency_symbol', '$'),
         ('admin_pin', '1234'),
-        ('announcement_bar', '✨ The Fragance´s | Fragancias 100% Originales & Decants | Pide directamente por WhatsApp sin carritos'),
+        ('announcement_bar', '✨ The Fragance´s | Fragancias 100% Originales & Decants | Pide directamente por WhatsApp: +58 424-2567728'),
     ]
 
     for k, v in default_settings:
