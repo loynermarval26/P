@@ -234,77 +234,93 @@
             <!-- ================= RIGHT COLUMN: SIDEBAR (4 COLS) ================= -->
             <div class="lg:col-span-4 space-y-6">
                 
-                <!-- Sidebar Card 1: Enciclopedia de Fragancias -->
+                <!-- Sidebar Card 1: Enciclopedia & Comunidad Real -->
                 <div class="frag-sidebar-card shadow-xl">
                     <div class="border-b border-frag-border pb-3 mb-4">
                         <h3 class="text-sm font-bold text-white tracking-wide flex items-center justify-between">
-                            <span>Enciclopedia de Fragancias</span>
-                            <i class="fa-solid fa-book-open text-frag-teal text-xs"></i>
+                            <span>Comunidad & Catálogo</span>
+                            <i class="fa-solid fa-chart-simple text-frag-teal text-xs"></i>
                         </h3>
                     </div>
 
-                    <div class="space-y-2.5 text-xs">
+                    <div class="space-y-3 text-xs">
                         <div class="flex justify-between items-center text-slate-300">
                             <span class="text-slate-400">Fragancias en catálogo</span>
                             <strong class="text-white font-mono text-sm">{{ stats.total_perfumes }}</strong>
                         </div>
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Reseñas y pirámides</span>
-                            <strong class="text-white font-mono text-sm">263,715</strong>
-                        </div>
-                        <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Casas & Diseñadores</span>
+                            <span class="text-slate-400">Casas de perfumería</span>
                             <strong class="text-white font-mono text-sm">{{ stats.total_brands }}</strong>
                         </div>
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">En línea (WhatsApp)</span>
-                            <span class="text-emerald-400 font-mono text-sm font-bold flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                840
-                            </span>
+                            <span class="text-slate-400">Clientes registrados</span>
+                            <strong class="text-frag-teal font-mono text-sm">{{ stats.total_users }}</strong>
+                        </div>
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span class="text-slate-400">Reseñas de compradores</span>
+                            <strong class="text-amber-400 font-mono text-sm">{{ stats.total_reviews }}</strong>
                         </div>
                     </div>
 
-                    <!-- Mini activity chart bar -->
-                    <div class="mt-5 pt-4 border-t border-frag-border">
-                        <div class="text-[10px] text-slate-500 mb-2 uppercase tracking-wider font-semibold">
-                            Actividad de la Comunidad:
-                        </div>
-                        <div class="h-8 flex items-end gap-1 px-1">
-                            {% for h in [4, 8, 14, 10, 18, 22, 16, 26, 20, 15, 28, 24, 18, 30, 26, 22, 17, 24, 19, 12, 20, 28, 16, 24, 14, 10, 18, 25, 22, 15] %}
-                            <div class="activity-bar {% if loop.index in [11, 14, 22, 28] %}active{% endif %}" style="height: {{ h }}px;"></div>
-                            {% endfor %}
-                        </div>
+                    <!-- Call to action for real buyers -->
+                    <div class="mt-4 pt-3 border-t border-frag-border text-[11px] text-slate-400">
+                        <p class="mb-2">¿Ya compraste tu perfume? Deja tu opinión verificada para la comunidad.</p>
+                        {% if not current_user %}
+                        <a href="{{ url_for('user_register') }}" class="block text-center py-1.5 px-3 rounded-lg bg-frag-teal/15 hover:bg-frag-teal/25 text-frag-teal border border-frag-teal/30 font-bold transition">
+                            Crear Cuenta de Cliente
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Sidebar Card 2: Últimas reseñas / Feed -->
+                <!-- Sidebar Card 2: Últimas reseñas Reales de Compradores -->
                 <div class="frag-sidebar-card shadow-xl">
                     <div class="border-b border-frag-border pb-3 mb-4 flex items-center justify-between">
                         <h3 class="text-sm font-bold text-white tracking-wide">Últimas reseñas</h3>
-                        <span class="text-[10px] text-slate-400">Comunidad</span>
+                        <span class="text-[10px] text-slate-400">Compradores Reales</span>
                     </div>
 
-                    <div class="space-y-4">
-                        {% for rev in sidebar_reviews %}
-                        <div class="flex items-center justify-between gap-3 group">
-                            <div class="w-10 h-10 rounded-lg bg-[#151518] border border-frag-border p-1 flex-shrink-0 flex items-center justify-center">
-                                <img src="{{ rev.image }}" alt="{{ rev.perfume }}" class="max-h-full object-contain">
+                    {% if recent_reviews %}
+                    <div class="space-y-3">
+                        {% for rev in recent_reviews %}
+                        <div class="p-2.5 rounded-xl bg-[#151518] border border-frag-border space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] text-frag-teal font-bold uppercase truncate">{{ rev.brand_name }}</span>
+                                <span class="text-amber-400 text-[10px]">
+                                    {% for _ in range(rev.rating) %}★{% endfor %}
+                                </span>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ rev.brand }}</div>
-                                <h4 class="text-xs font-semibold text-frag-teal hover:underline truncate">
-                                    <a href="{{ url_for('perfume_detail', slug=rev.slug) }}">
-                                        {{ rev.perfume }}
-                                    </a>
-                                </h4>
-                            </div>
-                            <div class="text-[11px] text-slate-400 flex items-center gap-1 flex-shrink-0">
-                                <span>de {{ rev.author }}</span>
+                            <h4 class="text-xs font-semibold text-white hover:underline truncate">
+                                <a href="{{ url_for('perfume_detail', slug=rev.perfume_slug) }}">
+                                    {{ rev.perfume_name }}
+                                </a>
+                            </h4>
+                            <p class="text-[11px] text-slate-300 line-clamp-2 italic">
+                                "{{ rev.comment }}"
+                            </p>
+                            <div class="text-[10px] text-slate-500 pt-0.5">
+                                de <strong>{{ rev.user_name }}</strong> • {{ rev.created_at[:10] }}
                             </div>
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <!-- Real empty state -->
+                    <div class="text-center py-6 text-slate-400 space-y-2">
+                        <i class="fa-regular fa-comment-dots text-2xl text-slate-600 block"></i>
+                        <p class="text-xs text-slate-300 font-medium">Aún no hay reseñas registradas.</p>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            Conforme los clientes se registren y opinen tras su compra, sus comentarios aparecerán aquí en tiempo real.
+                        </p>
+                        {% if not current_user %}
+                        <div class="pt-2">
+                            <a href="{{ url_for('user_register') }}" class="inline-block text-xs text-frag-teal hover:underline font-semibold">
+                                + Regístrate para ser el primero &rarr;
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Sidebar Card 3: Pedidos por WhatsApp Directo -->

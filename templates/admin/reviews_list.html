@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Reseñas Reales | Admin {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-frag-teal">Dashboard</a>
+        <span>/</span>
+        <span class="text-slate-300">Reseñas de Clientes</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Reseñas y Opiniones Reales</h1>
+            <p class="text-xs text-slate-400 mt-1">Opiniones escritas por compradores registrados.</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Volver al Dashboard</span>
+        </a>
+    </div>
+
+    <div class="bg-frag-card border border-frag-border rounded-2xl p-6 shadow-xl">
+        {% if reviews %}
+        <div class="space-y-4">
+            {% for r in reviews %}
+            <div class="p-4 rounded-xl bg-[#151518] border border-frag-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-start gap-4">
+                    <img src="{{ r.image_url }}" alt="{{ r.perfume_name }}" class="w-12 h-12 object-contain rounded-lg bg-black p-1 flex-shrink-0">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-frag-teal font-bold uppercase">{{ r.brand_name }}</span>
+                            <h3 class="text-sm font-bold text-white">{{ r.perfume_name }}</h3>
+                            <div class="text-amber-400 text-xs">
+                                {% for _ in range(r.rating) %}★{% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1 italic">
+                            "{{ r.comment }}"
+                        </p>
+                        <div class="text-[10px] text-slate-500 mt-1">
+                            Escrita por <strong>{{ r.user_name }}</strong> el {{ r.created_at[:10] }}
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('admin_review_delete', id=r.id) }}" onsubmit="return confirm('¿Eliminar esta reseña?');">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs border border-rose-900/50 transition">
+                        <i class="fa-solid fa-trash mr-1"></i> Eliminar
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12 text-slate-400 text-xs">
+            Aún no hay reseñas enviadas por usuarios en la web.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

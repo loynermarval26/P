@@ -16,7 +16,7 @@ UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "aromaluxe_perfume_secret_key_2026_x87b")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "thefragances_perfumes_secret_key_2026_x87b")
 app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
 
@@ -31,14 +31,27 @@ def allowed_file(filename):
 def inject_global_data():
     settings = db.get_settings()
     all_brands = db.get_all_brands()
+    
+    current_user = None
+    if 'user_id' in session:
+        current_user = db.get_user_by_id(session['user_id'])
+        
+    is_admin = session.get('admin_logged_in', False) or (current_user and current_user.get('role') == 'admin')
+    
     return dict(
         settings=settings,
         global_brands=all_brands,
-        is_admin_logged_in=session.get('admin_logged_in', False)
+        current_user=current_user,
+        is_admin_logged_in=is_admin
     )
 
 def is_admin():
-    return session.get('admin_logged_in', False)
+    if session.get('admin_logged_in'):
+        return True
+    if 'user_id' in session:
+        u = db.get_user_by_id(session['user_id'])
+        return u and u.get('role') == 'admin'
+    return False
 
 # ----------------- CLIENT ROUTES ----------------- #
 
@@ -49,48 +62,12 @@ def index():
     brands = db.get_all_brands()
     stats = db.get_stats()
     
-    # Community / Editorial reviews for the right sidebar (Fragrantica style)
-    sidebar_reviews = [
-        {
-            "brand": "Prada",
-            "perfume": "Prada Paradoxe Virtual Flower",
-            "author": "Mariabi",
-            "image": "https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=120&auto=format&fit=crop&q=80",
-            "slug": "libre-eau-de-parfum"
-        },
-        {
-            "brand": "Fragrance World",
-            "perfume": "Nudo Green Iris Exclusif",
-            "author": "Brenngal",
-            "image": "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=120&auto=format&fit=crop&q=80",
-            "slug": "tobacco-vanille"
-        },
-        {
-            "brand": "Armani",
-            "perfume": "Acqua Di Giò Parfum",
-            "author": "nneestorr",
-            "image": "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?w=120&auto=format&fit=crop&q=80",
-            "slug": "acqua-di-gio-parfum"
-        },
-        {
-            "brand": "Yves Saint Laurent",
-            "perfume": "Opium Eau de Toilette (2026)",
-            "author": "Horacio G",
-            "image": "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=120&auto=format&fit=crop&q=80",
-            "slug": "baccarat-rouge-540"
-        },
-        {
-            "brand": "Zara",
-            "perfume": "Vetiver Pamplemousse Elixir",
-            "author": "naso_en_ciernes",
-            "image": "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=120&auto=format&fit=crop&q=80",
-            "slug": "sauvage-eau-de-parfum"
-        }
-    ]
+    # Real reviews from database
+    recent_reviews = db.get_recent_reviews(limit=5)
 
     # Fragram community lifestyle photos
     fragram_photos = [
-        {"title": "Colección de Otoño", "author": "Sofia_Perfumes", "img": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&auto=format&fit=crop&q=80"},
+        {"title": "Colección de Invierno", "author": "Sofia_Perfumes", "img": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&auto=format&fit=crop&q=80"},
         {"title": "Noche de Baccarat", "author": "Carlos_Scent", "img": "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&auto=format&fit=crop&q=80"},
         {"title": "Frasco icónico JPG", "author": "Elena_Fragrance", "img": "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=400&auto=format&fit=crop&q=80"},
         {"title": "Marly & Rosas", "author": "NicheLover", "img": "https://images.unsplash.com/photo-1616949755610-8c9bbc08f138?w=400&auto=format&fit=crop&q=80"},
@@ -108,7 +85,7 @@ def index():
         "Comprando tu guardarropa de frag", "Guardarropa de fragancias"
     ]
 
-    # Popular 24 perfumes list (as in Fragrantica footer/home)
+    # Popular 24 perfumes list
     popular_24 = [
         "Liquid Brun French Avenue", "Emporio Armani Stronger", "Khamrah Lattafa", "Supremacy Collector's Edition",
         "Imagination Louis Vuitton", "Le Male Le Parfum Jean Paul Gaultier", "Khamrah Qahwa Lattafa", "Y Eau de Parfum Yves Saint Laurent",
@@ -118,7 +95,7 @@ def index():
         "Valentino Uomo Born In Roma", "Tobacco Vanille Tom Ford", "Vibrato Sospiro Perfumes", "Aventus Creed"
     ]
 
-    # Popular 60 brands list (as in Fragrantica footer/home)
+    # Popular 60 brands list
     popular_60_brands = [
         "Lattafa Perfumes", "Dior", "Yves Saint Laurent", "Guerlain", "Giorgio Armani",
         "French Avenue", "Tom Ford", "Armaf", "Jean Paul Gaultier", "Chanel",
@@ -135,7 +112,7 @@ def index():
     ]
 
     # Spotlight Perfume for the Left Hero Banner
-    spotlight_perfume = db.get_perfume_by_slug("baccarat-rouge-540") or (featured_perfumes[0] if featured_perfumes else None)
+    spotlight_perfume = db.get_perfume_by_slug("bleu-de-chanel") or (featured_perfumes[0] if featured_perfumes else None)
     
     return render_template(
         'index.html',
@@ -143,7 +120,7 @@ def index():
         recent_perfumes=recent_perfumes,
         brands=brands,
         stats=stats,
-        sidebar_reviews=sidebar_reviews,
+        recent_reviews=recent_reviews,
         fragram_photos=fragram_photos,
         category_pills=category_pills,
         popular_24=popular_24,
@@ -201,18 +178,18 @@ def perfume_detail(slug):
         abort(404)
         
     related = db.get_related_perfumes(perfume['brand_id'], perfume['id'], limit=4)
+    reviews = db.get_perfume_reviews(perfume['id'])
     
-    # Build WhatsApp URL
     settings = db.get_settings()
     phone = settings.get('whatsapp_number', '').replace('+', '').replace(' ', '').replace('-', '')
     
     price_str = f"${perfume['price']:.2f}"
-    if perfume.get('discount_price'):
-        price_str = f"${perfume['discount_price']:.2f} (Antes ${perfume['price']:.2f})"
+    if perfume.get('price_range'):
+        price_str += f" ({perfume['price_range']})"
         
     msg = (
-        f"¡Hola! Vengo de su página web y me interesa el perfume *{perfume['name']}* de *{perfume['brand_name']}* "
-        f"({perfume.get('concentration', 'Perfume')} - {perfume.get('size_ml', 100)}ml).\n"
+        f"¡Hola! Vengo de su página web {settings.get('store_name', 'The Fragance´s')} y me interesa el perfume *{perfume['name']}* de *{perfume['brand_name']}* "
+        f"({perfume.get('presentation', perfume.get('concentration', 'Perfume'))}).\n"
         f"Precio: {price_str}.\n"
         f"¿Tienen disponibilidad en stock para entrega o envío?"
     )
@@ -222,8 +199,96 @@ def perfume_detail(slug):
         'detail.html',
         perfume=perfume,
         related=related,
+        reviews=reviews,
         whatsapp_url=whatsapp_url
     )
+
+# ----------------- REAL REVIEWS SUBMISSION ----------------- #
+
+@app.route('/perfume/<slug>/resena', methods=['POST'])
+def submit_review(slug):
+    if 'user_id' not in session:
+        flash("Debes iniciar sesión para publicar una reseña de compra.", "warning")
+        return redirect(url_for('user_login'))
+        
+    perfume = db.get_perfume_by_slug(slug)
+    if not perfume:
+        abort(404)
+        
+    rating = request.form.get('rating', type=int) or 5
+    comment = request.form.get('comment', '').strip()
+    
+    if not comment:
+        flash("Por favor escribe tu opinión sobre el perfume.", "warning")
+        return redirect(url_for('perfume_detail', slug=slug))
+        
+    db.add_review(perfume['id'], session['user_id'], rating, comment)
+    flash("¡Gracias por tu reseña! Ha sido publicada exitosamente en el catálogo.", "success")
+    return redirect(url_for('perfume_detail', slug=slug))
+
+# ----------------- USER AUTH ROUTES ----------------- #
+
+@app.route('/registro', methods=['GET', 'POST'])
+def user_register():
+    if 'user_id' in session:
+        return redirect(url_for('user_profile'))
+        
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        phone = request.form.get('phone', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if not name or not email or not password:
+            flash("Todos los campos con asterisco (*) son obligatorios.", "danger")
+            return render_template('auth/register.html')
+            
+        user_id, err = db.create_user(name, email, password, phone)
+        if err:
+            flash(err, "danger")
+            return render_template('auth/register.html')
+            
+        session['user_id'] = user_id
+        flash(f"¡Bienvenido a The Fragance´s, {name}! Tu cuenta ha sido creada.", "success")
+        return redirect(url_for('user_profile'))
+        
+    return render_template('auth/register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def user_login():
+    if 'user_id' in session:
+        return redirect(url_for('user_profile'))
+        
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        user = db.authenticate_user(email, password)
+        if user:
+            session['user_id'] = user['id']
+            if user['role'] == 'admin':
+                session['admin_logged_in'] = True
+            flash(f"¡Hola de nuevo, {user['name']}!", "success")
+            return redirect(url_for('user_profile'))
+        else:
+            flash("Correo o contraseña incorrectos.", "danger")
+            
+    return render_template('auth/login.html')
+
+@app.route('/logout')
+def user_logout():
+    session.pop('user_id', None)
+    session.pop('admin_logged_in', None)
+    flash("Has cerrado sesión correctamente.", "info")
+    return redirect(url_for('index'))
+
+@app.route('/perfil')
+def user_profile():
+    if 'user_id' not in session:
+        return redirect(url_for('user_login'))
+    user = db.get_user_by_id(session['user_id'])
+    reviews = db.get_user_reviews(session['user_id'])
+    return render_template('auth/profile.html', user=user, reviews=reviews)
 
 @app.route('/marcas')
 def brands_list():
@@ -263,7 +328,7 @@ def admin_login():
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin_logged_in', None)
-    flash('Sesión cerrada correctamente.', 'info')
+    flash('Sesión de administrador cerrada.', 'info')
     return redirect(url_for('index'))
 
 @app.route('/admin')
@@ -273,6 +338,28 @@ def admin_dashboard():
     stats = db.get_stats()
     recent_perfumes = db.get_perfumes(order_by='newest', limit=6)
     return render_template('admin/dashboard.html', stats=stats, recent_perfumes=recent_perfumes)
+
+@app.route('/admin/usuarios')
+def admin_users():
+    if not is_admin():
+        return redirect(url_for('admin_login'))
+    users = db.get_all_users()
+    return render_template('admin/users_list.html', users=users)
+
+@app.route('/admin/resenas')
+def admin_reviews():
+    if not is_admin():
+        return redirect(url_for('admin_login'))
+    reviews = db.get_recent_reviews(limit=100)
+    return render_template('admin/reviews_list.html', reviews=reviews)
+
+@app.route('/admin/resenas/eliminar/<int:id>', methods=['POST'])
+def admin_review_delete(id):
+    if not is_admin():
+        return redirect(url_for('admin_login'))
+    db.delete_review(id)
+    flash("Reseña eliminada del sistema.", "info")
+    return redirect(url_for('admin_reviews'))
 
 @app.route('/admin/perfumes')
 def admin_perfumes():
@@ -350,7 +437,7 @@ def admin_perfume_new():
                 'occasions': occasions,
                 'longevity': request.form.get('longevity', 'Moderada (6-8h)'),
                 'sillage': request.form.get('sillage', 'Moderada'),
-                'rating': float(request.form.get('rating', 4.7)),
+                'rating': float(request.form.get('rating', 4.8)),
                 'is_featured': 1 if request.form.get('is_featured') == '1' else 0
             }
 
@@ -441,7 +528,7 @@ def admin_perfume_edit(id):
                 'occasions': occasions,
                 'longevity': request.form.get('longevity', 'Moderada (6-8h)'),
                 'sillage': request.form.get('sillage', 'Moderada'),
-                'rating': float(request.form.get('rating', 4.7)),
+                'rating': float(request.form.get('rating', 4.8)),
                 'is_featured': 1 if request.form.get('is_featured') == '1' else 0
             }
 

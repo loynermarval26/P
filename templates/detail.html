@@ -328,6 +328,119 @@
     </div>
     {% endif %}
 
+    <!-- REAL REVIEWS & CUSTOMER OPINIONS SECTION -->
+    <div class="bg-frag-card border border-frag-border rounded-3xl p-6 lg:p-8 mb-12 shadow-xl">
+        <div class="border-b border-frag-border pb-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <span class="frag-bar-teal"></span>
+                    <span>Opiniones & Reseñas de Compradores ({{ reviews|length }})</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Comentarios reales dejados por compradores registrados de {{ settings.store_name }}.
+                </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-[#151518] px-3 py-1.5 rounded-xl border border-frag-border">
+                <span class="text-slate-400">Puntuación:</span>
+                <span class="text-amber-400 font-bold text-sm">★ {{ "%.1f"|format(perfume.rating) }}</span>
+                <span class="text-slate-500 font-mono">({{ reviews|length }} opinión{{ 'es' if reviews|length != 1 else '' }})</span>
+            </div>
+        </div>
+
+        <!-- Add Review Form (if logged in) or Login prompt -->
+        <div class="mb-8">
+            {% if current_user %}
+            <form method="POST" action="{{ url_for('submit_review', slug=perfume.slug) }}" class="bg-[#151518] border border-frag-border rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-nib text-frag-teal text-xs"></i>
+                        <span>Deja tu reseña como {{ current_user.name }}</span>
+                    </span>
+                    <!-- Star Rating Select -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-[11px] text-slate-400">Calificación:</label>
+                        <select name="rating" class="bg-black border border-frag-border text-amber-400 font-bold rounded-lg px-2 py-1 text-xs focus:outline-none focus:border-frag-teal">
+                            <option value="5">★★★★★ (5 - Excelente)</option>
+                            <option value="4">★★★★☆ (4 - Muy Bueno)</option>
+                            <option value="3">★★★☆☆ (3 - Regular)</option>
+                            <option value="2">★★☆☆☆ (2 - No me convenció)</option>
+                            <option value="1">★☆☆☆☆ (1 - Malo)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea 
+                    name="comment" 
+                    required 
+                    rows="3" 
+                    placeholder="¿Qué te pareció este perfume tras tu compra? Cuéntanos sobre su fijación en piel, proyección, cumplidos y para qué ocasiones lo recomiendas..." 
+                    class="w-full bg-black border border-frag-border rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-frag-teal leading-relaxed"
+                ></textarea>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-frag-teal text-black font-extrabold text-xs hover:bg-teal-300 transition shadow-md">
+                        Publicar Mi Reseña
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="bg-[#151518] border border-frag-border rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left">
+                    <div class="text-xs font-bold text-white flex items-center justify-center sm:justify-start gap-1.5">
+                        <i class="fa-solid fa-cart-check text-emerald-400"></i>
+                        <span>¿Compraste o probaste este perfume?</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">
+                        Inicia sesión con tu cuenta para dejar tu reseña y compartir tu experiencia con la comunidad.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <a href="{{ url_for('user_login') }}" class="px-3.5 py-1.5 rounded-lg bg-frag-pill hover:bg-frag-cardHover text-xs text-white font-semibold border border-frag-border transition">
+                        Iniciar Sesión
+                    </a>
+                    <a href="{{ url_for('user_register') }}" class="px-3.5 py-1.5 rounded-lg bg-frag-teal text-black text-xs font-bold hover:bg-teal-300 transition">
+                        Crear Cuenta
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Reviews List (Real Users) -->
+        <div class="space-y-4">
+            {% if reviews %}
+                {% for r in reviews %}
+                <div class="p-4 rounded-2xl bg-[#151518] border border-frag-border space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-frag-teal/20 text-frag-teal font-bold text-xs flex items-center justify-center">
+                                {{ r.user_name[:1]|upper }}
+                            </div>
+                            <span class="text-xs font-bold text-white">{{ r.user_name }}</span>
+                            <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                                Comprador
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                            {% for _ in range(r.rating) %}★{% endfor %}
+                            <span class="text-slate-500 text-[10px] ml-1">{{ r.created_at[:10] }}</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed pl-9">
+                        "{{ r.comment }}"
+                    </p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-8 text-slate-400 text-xs bg-[#151518]/50 rounded-2xl border border-dashed border-frag-border">
+                    <i class="fa-regular fa-comment-dots text-2xl text-slate-600 mb-2 block"></i>
+                    <p class="font-medium text-slate-300">Aún no hay reseñas registradas para este perfume.</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">¡Sé el primero en compartir tu opinión tras tu compra!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Related Fragrances -->
     {% if related %}
     <div class="mb-12">

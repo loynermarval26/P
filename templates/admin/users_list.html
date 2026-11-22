@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuarios Registrados | Admin {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-frag-teal">Dashboard</a>
+        <span>/</span>
+        <span class="text-slate-300">Clientes & Usuarios Registrados</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Comunidad de Clientes Registrados</h1>
+            <p class="text-xs text-slate-400 mt-1">Personas reales registradas en la web.</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Volver al Dashboard</span>
+        </a>
+    </div>
+
+    <div class="bg-frag-card border border-frag-border rounded-2xl p-6 shadow-xl">
+        <div class="space-y-3">
+            {% for u in users %}
+            <div class="p-4 rounded-xl bg-[#151518] border border-frag-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-frag-teal/20 text-frag-teal font-bold flex items-center justify-center">
+                        {{ u.name[:2]|upper }}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-bold text-white">{{ u.name }}</h3>
+                            {% if u.role == 'admin' %}
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-950 text-amber-400 border border-amber-500/30">Admin</span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">Cliente</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-xs text-slate-400 mt-0.5">
+                            <span>{{ u.email }}</span>
+                            {% if u.phone %}
+                            <span>• <strong class="text-emerald-400">{{ u.phone }}</strong></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-400 sm:text-right">
+                    <div>{{ u.review_count }} reseña{{ 's' if u.review_count != 1 else '' }} escrita{{ 's' if u.review_count != 1 else '' }}</div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">Registrado el {{ u.created_at[:10] }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-10 text-slate-400 text-xs">
+                Aún no hay clientes registrados.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Cuenta | {{ settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full bg-frag-card border border-frag-border rounded-3xl p-8 shadow-2xl">
+        
+        <div class="w-14 h-14 rounded-2xl bg-frag-teal/10 border border-frag-teal/30 text-frag-teal text-xl flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-user-plus"></i>
+        </div>
+
+        <h1 class="text-2xl font-bold text-white text-center">Crear una Cuenta</h1>
+        <p class="text-xs text-slate-400 mt-2 text-center">
+            Únete a la comunidad de {{ settings.store_name }} para dejar tus opiniones y reseñas reales sobre tus compras.
+        </p>
+
+        <form method="POST" action="{{ url_for('user_register') }}" class="mt-6 space-y-4">
+            <div>
+                <label for="name" class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre Completo *</label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        required 
+                        autofocus
+                        placeholder="Ej. Carlos Mendoza" 
+                        class="w-full py-2.5 pl-10 pr-3 bg-[#151518] border border-frag-border rounded-xl text-xs text-white focus:outline-none focus:border-frag-teal"
+                    >
+                    <i class="fa-regular fa-user absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <div>
+                <label for="email" class="block text-xs font-semibold text-slate-300 mb-1.5">Correo Electrónico *</label>
+                <div class="relative">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        placeholder="tu@email.com" 
+                        class="w-full py-2.5 pl-10 pr-3 bg-[#151518] border border-frag-border rounded-xl text-xs text-white focus:outline-none focus:border-frag-teal"
+                    >
+                    <i class="fa-regular fa-envelope absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <div>
+                <label for="phone" class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp (Opcional)</label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Para coordinar tus pedidos" 
+                        class="w-full py-2.5 pl-10 pr-3 bg-[#151518] border border-frag-border rounded-xl text-xs text-white focus:outline-none focus:border-frag-teal"
+                    >
+                    <i class="fa-brands fa-whatsapp absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-xs font-semibold text-slate-300 mb-1.5">Contraseña *</label>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        minlength="4"
+                        placeholder="Mínimo 4 caracteres" 
+                        class="w-full py-2.5 pl-10 pr-3 bg-[#151518] border border-frag-border rounded-xl text-xs text-white focus:outline-none focus:border-frag-teal"
+                    >
+                    <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-frag-teal to-frag-cyan text-black font-extrabold text-xs shadow-lg shadow-frag-teal/20 hover:opacity-95 transition mt-2">
+                Crear Mi Cuenta
+            </button>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-frag-border text-center text-xs text-slate-400">
+            ¿Ya tienes cuenta? 
+            <a href="{{ url_for('user_login') }}" class="text-frag-teal font-semibold hover:underline">Inicia sesión aquí</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
