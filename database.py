@@ -56,7 +56,9 @@ def init_db():
         gender TEXT NOT NULL DEFAULT 'Unisex',
         concentration TEXT DEFAULT 'Eau de Parfum',
         size_ml INTEGER DEFAULT 100,
+        presentation TEXT,
         price REAL NOT NULL DEFAULT 0.0,
+        price_range TEXT,
         discount_price REAL,
         in_stock INTEGER DEFAULT 1,
         stock_status TEXT DEFAULT 'en_stock',
@@ -74,7 +76,7 @@ def init_db():
         occasions TEXT,
         longevity TEXT DEFAULT 'Moderada (6-8h)',
         sillage TEXT DEFAULT 'Moderada',
-        rating REAL DEFAULT 4.5,
+        rating REAL DEFAULT 4.7,
         is_featured INTEGER DEFAULT 0,
         views_count INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -88,18 +90,25 @@ def init_db():
     CREATE INDEX IF NOT EXISTS idx_perfumes_featured ON perfumes(is_featured);
     """)
 
-    # Default settings
+    # Migrations for existing DB if needed
+    cols = [r[1] for r in cursor.execute("PRAGMA table_info(perfumes)").fetchall()]
+    if 'presentation' not in cols:
+        cursor.execute("ALTER TABLE perfumes ADD COLUMN presentation TEXT")
+    if 'price_range' not in cols:
+        cursor.execute("ALTER TABLE perfumes ADD COLUMN price_range TEXT")
+
+    # Default settings with new name "The Fragance´s"
     default_settings = [
-        ('store_name', 'AromaLuxe Perfumería'),
-        ('store_tagline', 'Inspiración, notas olfativas y fragancias de diseñador & nicho'),
+        ('store_name', 'The Fragance´s'),
+        ('store_tagline', 'Alta perfumería, notas olfativas y catálogo exclusivo con atención directa por WhatsApp'),
         ('whatsapp_number', '584121234567'),
         ('currency_symbol', '$'),
         ('admin_pin', '1234'),
-        ('announcement_bar', '✨ Fragancias 100% Originales y Decants exclusivos | Contáctanos vía WhatsApp para entregas y envíos'),
+        ('announcement_bar', '✨ The Fragance´s | Fragancias 100% Originales & Decants | Pide directamente por WhatsApp sin carritos'),
     ]
 
     for k, v in default_settings:
-        cursor.execute("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", (k, v))
+        cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (k, v))
 
     conn.commit()
     conn.close()
@@ -136,6 +145,12 @@ def get_brand_by_id(brand_id):
     conn.close()
     return dict(brand) if brand else None
 
+def get_brand_by_name(name):
+    conn = get_db_connection()
+    brand = conn.execute("SELECT * FROM brands WHERE LOWER(name) = LOWER(?)", (name.strip(),)).fetchone()
+    conn.close()
+    return dict(brand) if brand else None
+
 def get_brand_by_slug(slug):
     conn = get_db_connection()
     brand = conn.execute("SELECT * FROM brands WHERE slug = ?", (slug,)).fetchone()
@@ -144,19 +159,26 @@ def get_brand_by_slug(slug):
 
 def create_brand(name, country='', description='', logo_url='', website=''):
     conn = get_db_connection()
-    slug = slugify(name)
-    # Check if slug exists, add suffix if so
-    existing = conn.execute("SELECT id FROM brands WHERE slug = ?", (slug,)).fetchone()
-    if existing:
-        slug = f"{slug}-{int(unicodedata.name(name[0], '0') if name else 1)}"
+    base_slug = slugify(name)
+    slug = base_slug
+    
+    counter = 1
+    while True:
+        existing = conn.execute("SELECT id FROM brands WHERE slug = ?", (slug,)).fetchone()
+        if not existing:
+            break
+        slug = f"{base_slug}-{counter}"
+        counter += 1
     
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO brands (name, slug, country, description, logo_url, website) 
+        INSERT OR IGNORE INTO brands (name, slug, country, description, logo_url, website) 
         VALUES (?, ?, ?, ?, ?, ?)
     """, (name.strip(), slug, country.strip(), description.strip(), logo_url.strip(), website.strip()))
     conn.commit()
-    brand_id = cursor.lastrowid
+    
+    b = conn.execute("SELECT id FROM brands WHERE name = ?", (name.strip(),)).fetchone()
+    brand_id = b['id'] if b else cursor.lastrowid
     conn.close()
     return brand_id
 
@@ -173,11 +195,10 @@ def update_brand(brand_id, name, country='', description='', logo_url='', websit
 
 def delete_brand(brand_id):
     conn = get_db_connection()
-    # Check if any perfumes are associated
     perfume = conn.execute("SELECT id FROM perfumes WHERE brand_id = ?", (brand_id,)).fetchone()
     if perfume:
         conn.close()
-        return False, "No puedes eliminar una marca que tiene perfumes asignados. Primero reasigna o elimina sus perfumes."
+        return False, "No puedes eliminar una marca que tiene perfumes asignados."
     conn.execute("DELETE FROM brands WHERE id = ?", (brand_id,))
     conn.commit()
     conn.close()
@@ -263,8 +284,14 @@ def get_perfumes(search=None, brand_id=None, gender=None, in_stock_only=False, a
         params.append(brand_id)
 
     if gender and gender.lower() != 'todos':
-        query += " AND LOWER(p.gender) = LOWER(?)"
-        params.append(gender)
+        # Accept Masculino / Hombre, Femenino / Mujer
+        if gender.lower() in ['hombre', 'masculino']:
+            query += " AND (LOWER(p.gender) = 'hombre' OR LOWER(p.gender) = 'masculino')"
+        elif gender.lower() in ['mujer', 'femenino']:
+            query += " AND (LOWER(p.gender) = 'mujer' OR LOWER(p.gender) = 'femenino')"
+        else:
+            query += " AND LOWER(p.gender) = LOWER(?)"
+            params.append(gender)
 
     if in_stock_only:
         query += " AND p.in_stock = 1"
@@ -273,7 +300,6 @@ def get_perfumes(search=None, brand_id=None, gender=None, in_stock_only=False, a
         query += " AND p.accords LIKE ?"
         params.append(f"%{accord}%")
 
-    # Ordering
     if order_by == 'price_asc':
         query += " ORDER BY p.price ASC"
     elif order_by == 'price_desc':
@@ -284,8 +310,8 @@ def get_perfumes(search=None, brand_id=None, gender=None, in_stock_only=False, a
         query += " ORDER BY p.created_at DESC"
     elif order_by == 'rating':
         query += " ORDER BY p.rating DESC"
-    else:  # featured default
-        query += " ORDER BY p.is_featured DESC, p.in_stock DESC, p.created_at DESC"
+    else:
+        query += " ORDER BY p.is_featured DESC, p.in_stock DESC, p.id ASC"
 
     query += " LIMIT ? OFFSET ?"
     params.extend([limit, offset])
@@ -322,8 +348,13 @@ def get_perfumes_count(search=None, brand_id=None, gender=None, in_stock_only=Fa
         params.append(brand_id)
 
     if gender and gender.lower() != 'todos':
-        query += " AND LOWER(p.gender) = LOWER(?)"
-        params.append(gender)
+        if gender.lower() in ['hombre', 'masculino']:
+            query += " AND (LOWER(p.gender) = 'hombre' OR LOWER(p.gender) = 'masculino')"
+        elif gender.lower() in ['mujer', 'femenino']:
+            query += " AND (LOWER(p.gender) = 'mujer' OR LOWER(p.gender) = 'femenino')"
+        else:
+            query += " AND LOWER(p.gender) = LOWER(?)"
+            params.append(gender)
 
     if in_stock_only:
         query += " AND p.in_stock = 1"
@@ -343,7 +374,7 @@ def get_featured_perfumes(limit=8):
         FROM perfumes p
         JOIN brands b ON p.brand_id = b.id
         WHERE p.is_featured = 1
-        ORDER BY p.in_stock DESC, p.created_at DESC
+        ORDER BY p.in_stock DESC, p.id ASC
         LIMIT ?
     """, (limit,)).fetchall()
     conn.close()
@@ -372,7 +403,6 @@ def get_perfume_by_slug(slug):
     """, (slug,)).fetchone()
     
     if row:
-        # Increment views
         conn.execute("UPDATE perfumes SET views_count = views_count + 1 WHERE slug = ?", (slug,))
         conn.commit()
 
@@ -410,7 +440,6 @@ def save_perfume(data, perfume_id=None):
     name = data['name'].strip()
     slug = slugify(f"{data.get('brand_name', '')}-{name}" if data.get('brand_name') else name)
 
-    # ensure slug is unique
     if perfume_id:
         slug_check = conn.execute("SELECT id FROM perfumes WHERE slug = ? AND id != ?", (slug, perfume_id)).fetchone()
     else:
@@ -433,8 +462,8 @@ def save_perfume(data, perfume_id=None):
         cursor.execute("""
             UPDATE perfumes SET
                 name = ?, slug = ?, brand_id = ?, collection_id = ?, gender = ?,
-                concentration = ?, size_ml = ?, price = ?, discount_price = ?,
-                in_stock = ?, stock_status = ?, stock_quantity = ?, image_url = ?,
+                concentration = ?, size_ml = ?, presentation = ?, price = ?, price_range = ?,
+                discount_price = ?, in_stock = ?, stock_status = ?, stock_quantity = ?, image_url = ?,
                 olfactory_family = ?, year_released = ?, perfumer = ?, description = ?,
                 accords = ?, top_notes = ?, heart_notes = ?, base_notes = ?,
                 seasons = ?, occasions = ?, longevity = ?, sillage = ?,
@@ -442,34 +471,36 @@ def save_perfume(data, perfume_id=None):
             WHERE id = ?
         """, (
             name, slug, data['brand_id'], data.get('collection_id') or None, data.get('gender', 'Unisex'),
-            data.get('concentration', 'Eau de Parfum'), data.get('size_ml', 100), data.get('price', 0.0),
-            data.get('discount_price') or None, in_stock, stock_status, data.get('stock_quantity', 5),
+            data.get('concentration', 'Eau de Parfum'), data.get('size_ml', 100), data.get('presentation', ''),
+            data.get('price', 0.0), data.get('price_range', ''), data.get('discount_price') or None,
+            in_stock, stock_status, data.get('stock_quantity', 5),
             data.get('image_url', ''), data.get('olfactory_family', ''), data.get('year_released') or None,
             data.get('perfumer', ''), data.get('description', ''),
             accords_json, top_notes_json, heart_notes_json, base_notes_json,
             seasons_json, occasions_json, data.get('longevity', 'Moderada (6-8h)'),
-            data.get('sillage', 'Moderada'), data.get('rating', 4.5), int(data.get('is_featured', 0)),
+            data.get('sillage', 'Moderada'), data.get('rating', 4.7), int(data.get('is_featured', 0)),
             perfume_id
         ))
         result_id = perfume_id
     else:
         cursor.execute("""
             INSERT INTO perfumes (
-                name, slug, brand_id, collection_id, gender, concentration, size_ml,
-                price, discount_price, in_stock, stock_status, stock_quantity, image_url,
+                name, slug, brand_id, collection_id, gender, concentration, size_ml, presentation,
+                price, price_range, discount_price, in_stock, stock_status, stock_quantity, image_url,
                 olfactory_family, year_released, perfumer, description, accords,
                 top_notes, heart_notes, base_notes, seasons, occasions, longevity,
                 sillage, rating, is_featured
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             name, slug, data['brand_id'], data.get('collection_id') or None, data.get('gender', 'Unisex'),
-            data.get('concentration', 'Eau de Parfum'), data.get('size_ml', 100), data.get('price', 0.0),
-            data.get('discount_price') or None, in_stock, stock_status, data.get('stock_quantity', 5),
+            data.get('concentration', 'Eau de Parfum'), data.get('size_ml', 100), data.get('presentation', ''),
+            data.get('price', 0.0), data.get('price_range', ''), data.get('discount_price') or None,
+            in_stock, stock_status, data.get('stock_quantity', 5),
             data.get('image_url', ''), data.get('olfactory_family', ''), data.get('year_released') or None,
             data.get('perfumer', ''), data.get('description', ''),
             accords_json, top_notes_json, heart_notes_json, base_notes_json,
             seasons_json, occasions_json, data.get('longevity', 'Moderada (6-8h)'),
-            data.get('sillage', 'Moderada'), data.get('rating', 4.5), int(data.get('is_featured', 0))
+            data.get('sillage', 'Moderada'), data.get('rating', 4.7), int(data.get('is_featured', 0))
         ))
         result_id = cursor.lastrowid
 

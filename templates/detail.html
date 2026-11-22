@@ -7,22 +7,22 @@
     
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6">
-        <a href="{{ url_for('index') }}" class="hover:text-brand-emerald">Inicio</a>
+        <a href="{{ url_for('index') }}" class="hover:text-frag-teal">Inicio</a>
         <span>/</span>
-        <a href="{{ url_for('catalog') }}" class="hover:text-brand-emerald">Catálogo</a>
+        <a href="{{ url_for('catalog') }}" class="hover:text-frag-teal">Catálogo</a>
         <span>/</span>
-        <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="hover:text-brand-emerald">{{ perfume.brand_name }}</a>
+        <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="hover:text-frag-teal">{{ perfume.brand_name }}</a>
         <span>/</span>
         <span class="text-slate-300">{{ perfume.name }}</span>
     </nav>
 
     <!-- Top Product Card Showcase -->
-    <div class="bg-dark-900 border border-dark-800 rounded-3xl p-6 lg:p-10 shadow-2xl mb-12">
+    <div class="bg-frag-card border border-frag-border rounded-3xl p-6 lg:p-10 shadow-2xl mb-12">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             <!-- Left: Bottle Image & Badges (5 cols) -->
             <div class="lg:col-span-5 flex flex-col items-center">
-                <div class="relative w-full max-w-sm aspect-square bg-dark-950/70 border border-dark-800 rounded-2xl p-6 flex items-center justify-center overflow-hidden shadow-inner group">
+                <div class="relative w-full max-w-sm aspect-square bg-[#151518] border border-frag-border rounded-2xl p-6 flex items-center justify-center overflow-hidden shadow-inner group">
                     <img 
                         src="{{ perfume.image_url }}" 
                         alt="{{ perfume.name }}" 
@@ -43,7 +43,7 @@
 
                     <!-- Concentration badge -->
                     <div class="absolute bottom-4 right-4">
-                        <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-dark-900/90 text-brand-cyan border border-brand-cyan/30">
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-black/80 text-frag-teal border border-frag-teal/30">
                             {{ perfume.concentration }}
                         </span>
                     </div>
@@ -52,7 +52,7 @@
                 <!-- Admin Quick Edit shortcut if logged in -->
                 {% if is_admin_logged_in %}
                 <div class="mt-4 flex items-center gap-3 w-full max-w-sm">
-                    <a href="{{ url_for('admin_perfume_edit', id=perfume.id) }}" class="flex-1 py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-brand-cyan font-semibold text-center border border-slate-700 transition">
+                    <a href="{{ url_for('admin_perfume_edit', id=perfume.id) }}" class="flex-1 py-2 px-3 rounded-lg bg-[#27272f] hover:bg-[#34343e] text-xs text-frag-teal font-semibold text-center border border-frag-border transition">
                         <i class="fa-solid fa-pen-to-square mr-1"></i> Editar Perfume
                     </a>
                 </div>
@@ -62,16 +62,16 @@
             <!-- Right: Technical Profile & WhatsApp Action (7 cols) -->
             <div class="lg:col-span-7 flex flex-col justify-between">
                 <div>
-                    <!-- Brand & Year -->
+                    <!-- Brand & Presentation -->
                     <div class="flex items-center gap-3 mb-2">
-                        <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="text-sm font-bold tracking-widest text-brand-cyan uppercase hover:underline">
+                        <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="text-sm font-bold tracking-widest text-frag-teal uppercase hover:underline">
                             {{ perfume.brand_name }}
                         </a>
-                        {% if perfume.year_released %}
-                        <span class="text-xs text-slate-500">| Lanzamiento {{ perfume.year_released }}</span>
-                        {% endif %}
                         {% if perfume.brand_country %}
                         <span class="text-xs text-slate-500">({{ perfume.brand_country }})</span>
+                        {% endif %}
+                        {% if perfume.year_released %}
+                        <span class="text-xs text-slate-500">| Lanzamiento {{ perfume.year_released }}</span>
                         {% endif %}
                     </div>
 
@@ -82,17 +82,19 @@
 
                     <!-- Gender & Family Tags -->
                     <div class="flex flex-wrap items-center gap-2 mt-3">
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-dark-850 text-slate-300 border border-slate-700">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-frag-pill text-slate-200 border border-white/5">
                             {{ perfume.gender }}
                         </span>
+                        {% if perfume.presentation %}
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-frag-pill text-frag-teal border border-frag-teal/30">
+                            {{ perfume.presentation }}
+                        </span>
+                        {% endif %}
                         {% if perfume.olfactory_family %}
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-dark-850 text-brand-emerald border border-brand-emerald/30">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-frag-pill text-amber-300 border border-amber-500/20">
                             {{ perfume.olfactory_family }}
                         </span>
                         {% endif %}
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-dark-850 text-slate-300 border border-slate-700">
-                            {{ perfume.size_ml }} ml
-                        </span>
                     </div>
 
                     <!-- Rating & Perfumer -->
@@ -106,30 +108,27 @@
                             <span class="text-white ml-1">{{ "%.1f"|format(perfume.rating) }} / 5.0</span>
                         </div>
                         {% if perfume.perfumer %}
-                        <span class="text-slate-500">| Nariz: <strong class="text-slate-300">{{ perfume.perfumer }}</strong></span>
+                        <span class="text-slate-500">| Perfumista: <strong class="text-slate-300">{{ perfume.perfumer }}</strong></span>
                         {% endif %}
                     </div>
 
                     <!-- Price Box -->
-                    <div class="mt-6 p-4 rounded-2xl bg-dark-950/80 border border-dark-800 flex items-center justify-between">
+                    <div class="mt-6 p-4 rounded-2xl bg-[#151518] border border-frag-border flex items-center justify-between">
                         <div>
-                            <span class="text-xs text-slate-400 block">Precio del Catálogo:</span>
-                            {% if perfume.discount_price %}
+                            <span class="text-xs text-slate-400 block">Precio Referencial:</span>
                             <div class="flex items-baseline gap-3">
-                                <span class="text-3xl font-extrabold text-white">${{ "%.2f"|format(perfume.discount_price) }}</span>
-                                <span class="text-sm text-slate-500 line-through">${{ "%.2f"|format(perfume.price) }}</span>
-                                <span class="text-xs font-bold text-rose-400 bg-rose-950/60 px-2 py-0.5 rounded border border-rose-500/30">
-                                    Oferta
+                                <span class="text-3xl font-extrabold text-white">${{ "%.2f"|format(perfume.price) }}</span>
+                                {% if perfume.price_range %}
+                                <span class="text-xs text-slate-400 font-mono bg-frag-pill px-2 py-0.5 rounded border border-white/10">
+                                    Rango: {{ perfume.price_range }} USD
                                 </span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <span class="text-3xl font-extrabold text-white">${{ "%.2f"|format(perfume.price) }}</span>
-                            {% endif %}
                         </div>
 
                         <div class="text-right">
-                            <span class="text-xs text-slate-400 block">Envío / Entrega:</span>
-                            <span class="text-xs font-semibold text-brand-emerald">Coordinación directa vía WhatsApp</span>
+                            <span class="text-xs text-slate-400 block">Atención Directa:</span>
+                            <span class="text-xs font-semibold text-emerald-400">Coordinación directa vía WhatsApp</span>
                         </div>
                     </div>
 
@@ -142,8 +141,8 @@
                             <span>Pedir / Consultar Disponibilidad por WhatsApp</span>
                         </a>
                         <p class="text-[11px] text-center text-slate-500 mt-2">
-                            <i class="fa-solid fa-shield-halved text-brand-emerald mr-1"></i>
-                            Atención personalizada. Responderemos tus preguntas sobre entrega, pagos y disponibilidad.
+                            <i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i>
+                            Sin intermediarios. Respuesta rápida sobre entrega inmediata y lotes disponibles.
                         </p>
                     </div>
 
@@ -157,19 +156,19 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
         
         <!-- Left: Acordes Principales (Fragrantica Accord Stack) (5 cols) -->
-        <div class="lg:col-span-5 bg-dark-900 border border-dark-800 rounded-3xl p-6 shadow-xl">
-            <div class="flex items-center gap-2 mb-4 border-b border-dark-800 pb-3">
-                <i class="fa-solid fa-bars-progress text-brand-emerald text-lg"></i>
+        <div class="lg:col-span-5 bg-frag-card border border-frag-border rounded-3xl p-6 shadow-xl">
+            <div class="flex items-center gap-2 mb-4 border-b border-frag-border pb-3">
+                <i class="fa-solid fa-bars-progress text-frag-teal text-lg"></i>
                 <h2 class="text-lg font-bold text-white">Acordes Principales</h2>
             </div>
             <p class="text-xs text-slate-400 mb-6">
-                Perfil de intensidades de las notas predominantes en esta composición aromática.
+                Perfil de intensidades de las notas predominantes en esta fragancia.
             </p>
 
             {% if perfume.accords %}
             <div class="accord-bar-container">
                 {% for acc in perfume.accords %}
-                <div class="accord-bar-item" style="background-color: #0b1320;">
+                <div class="accord-bar-item" style="background-color: #151518;">
                     <div class="accord-bar-fill" style="width: {{ acc.percent }}%; background-color: {{ acc.color }};"></div>
                     <div class="accord-bar-label">
                         <span>{{ acc.name }}</span>
@@ -184,20 +183,20 @@
         </div>
 
         <!-- Right: Pirámide Olfativa (Fragrantica Olfactory Pyramid) (7 cols) -->
-        <div class="lg:col-span-7 bg-dark-900 border border-dark-800 rounded-3xl p-6 shadow-xl">
-            <div class="flex items-center gap-2 mb-4 border-b border-dark-800 pb-3">
-                <i class="fa-solid fa-layer-group text-brand-cyan text-lg"></i>
+        <div class="lg:col-span-7 bg-frag-card border border-frag-border rounded-3xl p-6 shadow-xl">
+            <div class="flex items-center gap-2 mb-4 border-b border-frag-border pb-3">
+                <i class="fa-solid fa-layer-group text-frag-cyan text-lg"></i>
                 <h2 class="text-lg font-bold text-white">Pirámide Olfativa (Notas)</h2>
             </div>
             <p class="text-xs text-slate-400 mb-6">
-                La evolución olfativa desde la primera vaporización hasta la fijación en la piel.
+                Evolución de las notas olfativas desde la aplicación hasta el secado en piel.
             </p>
 
             <div class="space-y-4">
                 
                 <!-- Notas de Salida -->
                 <div class="pyramid-level">
-                    <div class="flex items-center gap-2 text-xs font-bold text-brand-cyan uppercase tracking-wider mb-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-frag-cyan uppercase tracking-wider mb-2">
                         <i class="fa-solid fa-wind text-sm"></i>
                         <span>Notas de Salida (Primeros 15-30 minutos)</span>
                     </div>
@@ -205,7 +204,7 @@
                     <div class="flex flex-wrap gap-2 pt-1">
                         {% for note in perfume.top_notes %}
                         <span class="note-badge">
-                            <i class="fa-solid fa-sparkles text-brand-cyan text-xs"></i>
+                            <i class="fa-solid fa-sparkles text-frag-cyan text-xs"></i>
                             {{ note }}
                         </span>
                         {% endfor %}
@@ -239,7 +238,7 @@
                 <div class="pyramid-level">
                     <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
                         <i class="fa-solid fa-tree text-sm"></i>
-                        <span>Notas de Fondo (Fijación y estela final, +6 horas)</span>
+                        <span>Notas de Fondo (Fijación y estela, +6 horas)</span>
                     </div>
                     {% if perfume.base_notes %}
                     <div class="flex flex-wrap gap-2 pt-1">
@@ -262,47 +261,43 @@
 
     <!-- Technical Specs & Performance Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        
-        <!-- Clima y Estaciones -->
-        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5">
+        <div class="bg-frag-card border border-frag-border rounded-2xl p-5">
             <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-cloud-sun text-brand-cyan"></i>
+                <i class="fa-solid fa-cloud-sun text-frag-cyan"></i>
                 <span>Estaciones Recomendadas</span>
             </h3>
             <div class="flex flex-wrap gap-2">
                 {% if perfume.seasons %}
                     {% for season in perfume.seasons %}
-                    <span class="px-3 py-1 rounded-lg bg-dark-950 text-xs font-semibold text-slate-200 border border-dark-800">
+                    <span class="px-3 py-1 rounded-lg bg-[#151518] text-xs font-semibold text-slate-200 border border-frag-border">
                         {{ season }}
                     </span>
                     {% endfor %}
                 {% else %}
-                    <span class="text-xs text-slate-500">Versátil para todo el año</span>
+                    <span class="text-xs text-slate-500">Versátil todo el año</span>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Ocasiones de Uso -->
-        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5">
+        <div class="bg-frag-card border border-frag-border rounded-2xl p-5">
             <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-calendar-day text-brand-emerald"></i>
+                <i class="fa-solid fa-calendar-day text-frag-teal"></i>
                 <span>Ocasiones y Momento</span>
             </h3>
             <div class="flex flex-wrap gap-2">
                 {% if perfume.occasions %}
                     {% for occasion in perfume.occasions %}
-                    <span class="px-3 py-1 rounded-lg bg-dark-950 text-xs font-semibold text-slate-200 border border-dark-800">
+                    <span class="px-3 py-1 rounded-lg bg-[#151518] text-xs font-semibold text-slate-200 border border-frag-border">
                         {{ occasion }}
                     </span>
                     {% endfor %}
                 {% else %}
-                    <span class="text-xs text-slate-500">Cualquier momento</span>
+                    <span class="text-xs text-slate-500">Cualquier ocasión</span>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Rendimiento (Longevidad & Estela) -->
-        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5">
+        <div class="bg-frag-card border border-frag-border rounded-2xl p-5">
             <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
                 <i class="fa-solid fa-stopwatch text-amber-400"></i>
                 <span>Rendimiento en Piel</span>
@@ -318,15 +313,14 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Description / Storytelling -->
     {% if perfume.description %}
-    <div class="bg-dark-900 border border-dark-800 rounded-3xl p-6 lg:p-8 mb-12">
+    <div class="bg-frag-card border border-frag-border rounded-3xl p-6 lg:p-8 mb-12">
         <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-feather text-brand-emerald"></i>
-            <span>Historia y Descripción del Perfume</span>
+            <i class="fa-solid fa-feather text-frag-teal"></i>
+            <span>Descripción Breve & Carácter</span>
         </h3>
         <p class="text-sm text-slate-300 leading-relaxed max-w-4xl">
             {{ perfume.description }}
@@ -339,27 +333,27 @@
     <div class="mb-12">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold text-white">Más de la Casa {{ perfume.brand_name }}</h3>
-            <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="text-xs text-brand-cyan hover:underline">
+            <a href="{{ url_for('brand_detail', slug=perfume.brand_slug) }}" class="text-xs text-frag-teal hover:underline">
                 Ver todos de {{ perfume.brand_name }} &rarr;
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for rel in related %}
-            <div class="perfume-card p-4 flex flex-col justify-between">
+            <div class="frag-bottle-card p-4 flex flex-col justify-between">
                 <div>
-                    <div class="h-44 flex items-center justify-center bg-dark-950/60 rounded-xl p-3 mb-3">
+                    <div class="h-44 flex items-center justify-center bg-[#151518] rounded-xl p-3 mb-3">
                         <img src="{{ rel.image_url }}" alt="{{ rel.name }}" class="max-h-full object-contain">
                     </div>
-                    <span class="text-[10px] text-brand-cyan font-bold uppercase">{{ rel.brand_name }}</span>
+                    <span class="text-[10px] text-frag-teal font-bold uppercase">{{ rel.brand_name }}</span>
                     <h4 class="text-sm font-bold text-white line-clamp-1 mt-0.5">
-                        <a href="{{ url_for('perfume_detail', slug=rel.slug) }}" class="hover:text-brand-emerald">
+                        <a href="{{ url_for('perfume_detail', slug=rel.slug) }}" class="hover:text-frag-teal">
                             {{ rel.name }}
                         </a>
                     </h4>
                 </div>
-                <div class="mt-3 pt-3 border-t border-dark-800 flex items-center justify-between">
+                <div class="mt-3 pt-3 border-t border-frag-border flex items-center justify-between">
                     <span class="text-sm font-extrabold text-white">${{ "%.2f"|format(rel.price) }}</span>
-                    <a href="{{ url_for('perfume_detail', slug=rel.slug) }}" class="text-xs text-brand-emerald font-semibold hover:underline">
+                    <a href="{{ url_for('perfume_detail', slug=rel.slug) }}" class="text-xs text-frag-teal font-semibold hover:underline">
                         Detalles &rarr;
                     </a>
                 </div>

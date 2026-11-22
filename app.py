@@ -330,7 +330,9 @@ def admin_perfume_new():
                 'gender': request.form.get('gender', 'Unisex'),
                 'concentration': request.form.get('concentration', 'Eau de Parfum'),
                 'size_ml': int(request.form.get('size_ml', 100)),
+                'presentation': request.form.get('presentation', ''),
                 'price': float(request.form.get('price', 0.0)),
+                'price_range': request.form.get('price_range', ''),
                 'discount_price': float(request.form.get('discount_price')) if request.form.get('discount_price') else None,
                 'in_stock': 1 if request.form.get('in_stock') == '1' else 0,
                 'stock_status': request.form.get('stock_status', 'en_stock'),
@@ -348,7 +350,7 @@ def admin_perfume_new():
                 'occasions': occasions,
                 'longevity': request.form.get('longevity', 'Moderada (6-8h)'),
                 'sillage': request.form.get('sillage', 'Moderada'),
-                'rating': float(request.form.get('rating', 4.5)),
+                'rating': float(request.form.get('rating', 4.7)),
                 'is_featured': 1 if request.form.get('is_featured') == '1' else 0
             }
 
@@ -419,7 +421,9 @@ def admin_perfume_edit(id):
                 'gender': request.form.get('gender', 'Unisex'),
                 'concentration': request.form.get('concentration', 'Eau de Parfum'),
                 'size_ml': int(request.form.get('size_ml', 100)),
+                'presentation': request.form.get('presentation', ''),
                 'price': float(request.form.get('price', 0.0)),
+                'price_range': request.form.get('price_range', ''),
                 'discount_price': float(request.form.get('discount_price')) if request.form.get('discount_price') else None,
                 'in_stock': 1 if request.form.get('in_stock') == '1' else 0,
                 'stock_status': request.form.get('stock_status', 'en_stock'),
@@ -437,7 +441,7 @@ def admin_perfume_edit(id):
                 'occasions': occasions,
                 'longevity': request.form.get('longevity', 'Moderada (6-8h)'),
                 'sillage': request.form.get('sillage', 'Moderada'),
-                'rating': float(request.form.get('rating', 4.5)),
+                'rating': float(request.form.get('rating', 4.7)),
                 'is_featured': 1 if request.form.get('is_featured') == '1' else 0
             }
 
