@@ -1,8 +1,7 @@
 services:
   - type: web
-    name: aromaluxe-fragrantica-perfumes
+    name: thefragances-perfumes
     env: python
-    plan: free
     buildCommand: pip install -r requirements.txt && python seed.py
     startCommand: gunicorn app:app
     envVars:
