@@ -12,54 +12,78 @@ set "PY_CMD="
 python --version >nul 2>&1
 if %errorlevel% equ 0 (
     set "PY_CMD=python"
-    goto :INICIAR
+    goto :VERIFICAR_LIBRERIAS
 )
 
 :: 2. Intentar con el lanzador oficial de Windows 'py'
 py --version >nul 2>&1
 if %errorlevel% equ 0 (
     set "PY_CMD=py"
-    goto :INICIAR
+    goto :VERIFICAR_LIBRERIAS
 )
 
-:: 3. Buscar en rutas estándar de instalación de Windows
+:: 3. Buscar en rutas estandar de instalacion de Windows
 for /d %%D in ("%LOCALAPPDATA%\Programs\Python\Python*") do (
     if exist "%%D\python.exe" (
         set "PY_CMD=%%D\python.exe"
-        goto :INICIAR
+        goto :VERIFICAR_LIBRERIAS
     )
 )
 
 for /d %%D in ("C:\Python*") do (
     if exist "%%D\python.exe" (
         set "PY_CMD=%%D\python.exe"
-        goto :INICIAR
+        goto :VERIFICAR_LIBRERIAS
     )
 )
 
 for /d %%D in ("%PROGRAMFILES%\Python*") do (
     if exist "%%D\python.exe" (
         set "PY_CMD=%%D\python.exe"
-        goto :INICIAR
+        goto :VERIFICAR_LIBRERIAS
     )
 )
 
-:: 4. Si no se encontró en ninguna parte:
+:: 4. Si no se encontro Python:
 color 0C
-echo [ERROR] No se detecto Python instalado en el sistema.
+echo [ERROR] No se detecto Python instalado en esta computadora.
 echo.
-echo Para solucionarlo rapidamente:
-echo   1. Vuelve a abrir el instalador de Python (o descargalo de python.org).
-echo   2. Marca la casilla "Add python.exe to PATH" abajo antes de instalar.
+echo Para solucionarlo:
+echo   1. Descarga Python gratis desde: https://www.python.org/downloads/
+echo   2. Al instalar, MARCA la casilla "Add python.exe to PATH".
 echo   3. Vuelve a ejecutar este archivo.
 echo ==============================================================
 echo.
 pause
 exit /b 1
 
-:INICIAR
+:VERIFICAR_LIBRERIAS
 echo [OK] Python detectado: %PY_CMD%
 echo.
+
+:: Verificar si Flask esta instalado
+%PY_CMD% -c "import flask" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [INSTALACION AUTOMATICA] Flask no esta instalado aun.
+    echo Instalando librerias necesarias (Flask, etc.)...
+    echo.
+    %PY_CMD% -m pip install -r requirements.txt
+    if %errorlevel% neq 0 (
+        color 0C
+        echo.
+        echo [ERROR] Hubo un problema al instalar Flask.
+        echo Verifica tu conexion a internet o ejecuta en la consola:
+        echo   pip install -r requirements.txt
+        echo.
+        pause
+        exit /b 1
+    )
+    echo.
+    echo [OK] Librerias instaladas con exito.
+    echo.
+)
+
+:INICIAR
 echo Iniciando servidor web de The Fragance´s...
 echo.
 echo [1] Para acceder desde esta PC:
