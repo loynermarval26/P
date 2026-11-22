@@ -37,14 +37,26 @@ html.dark {
   --frag-purple: #a855f7;
 }
 
-html, body {
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
   background-color: var(--bg-main);
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
-  max-width: 100vw;
+  max-width: 100%;
   width: 100%;
+  position: relative;
 }
 
 /* ================= LIGHT MODE OVERRIDES FOR TAILWIND UTILITIES ================= */
@@ -138,6 +150,8 @@ html:not(.dark) #themeToggleBtn {
     radial-gradient(circle at 85% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 45%),
     radial-gradient(circle at 15% 40%, rgba(124, 58, 237, 0.05) 0%, transparent 45%);
   background-repeat: no-repeat;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 /* Subtle accent instead of heavy brown glow */
