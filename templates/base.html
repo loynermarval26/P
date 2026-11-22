@@ -71,30 +71,29 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links (Sin botón Fragram) -->
+                <!-- Navigation Links -->
                 <nav class="hidden lg:flex items-center gap-6 text-[13px] font-medium text-slate-300">
-                    <a href="{{ url_for('catalog') }}" class="hover:text-frag-teal transition">Noticias</a>
+                    <a href="{{ url_for('catalog') }}" class="hover:text-frag-teal transition">Catálogo</a>
                     
                     <!-- Fragancias Dropdown -->
                     <div class="relative group">
                         <button class="hover:text-frag-teal transition flex items-center gap-1 py-2">
-                            <span>Fragancias</span>
+                            <span>Fragancias en Stock</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-frag-teal transition"></i>
                         </button>
                         <div class="absolute left-0 mt-1 w-48 bg-frag-card border border-frag-border rounded-xl shadow-2xl py-2 hidden group-hover:block z-50">
-                            <a href="{{ url_for('catalog') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Todas las Fragancias (20)</a>
-                            <a href="{{ url_for('catalog', genero='Hombre') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Para Hombre (9)</a>
-                            <a href="{{ url_for('catalog', genero='Mujer') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Para Mujer (9)</a>
+                            <a href="{{ url_for('catalog') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Todo el Stock (20)</a>
+                            <a href="{{ url_for('catalog', genero='Hombre') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Caballeros (9)</a>
+                            <a href="{{ url_for('catalog', genero='Mujer') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Damas (9)</a>
                             <a href="{{ url_for('catalog', genero='Unisex') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Nicho & Unisex (2)</a>
-                            <div class="border-t border-frag-border my-1"></div>
-                            <a href="{{ url_for('brands_list') }}" class="block px-4 py-2 text-xs text-slate-300 hover:text-frag-teal hover:bg-frag-pill">Ver por Diseñador</a>
                         </div>
                     </div>
 
                     <a href="{{ url_for('catalog', q='Vainilla') }}" class="hover:text-frag-teal transition">Notas</a>
-                    <a href="{{ url_for('index') }}" class="hover:text-frag-teal transition {% if request.endpoint == 'index' %}text-frag-teal font-semibold{% endif %}">Feed</a>
-                    <a href="{{ url_for('brands_list') }}" class="hover:text-frag-teal transition">Marcas</a>
-                    <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="hover:text-frag-teal transition">Contacto (+58 424-2567728)</a>
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="hover:text-frag-teal transition flex items-center gap-1.5 text-emerald-400 font-semibold">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>+58 424-2567728</span>
+                    </a>
                 </nav>
 
                 <!-- Right Actions: Functional Day/Night Toggle, WhatsApp, User -->
@@ -205,14 +204,14 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3 overflow-hidden text-slate-300">
                 <span class="px-2.5 py-0.5 rounded bg-[#2b2b32] text-white font-semibold text-[11px] flex-shrink-0">
-                    Feed
+                    Stock
                 </span>
                 <span class="truncate text-slate-400">
-                    The Fragance´s • Catálogo de perfumería exclusiva. Pedidos directos vía WhatsApp: +58 424-2567728
+                    The Fragance´s • Catálogo de perfumes disponibles. Pedidos directos vía WhatsApp: +58 424-2567728
                 </span>
             </div>
             <a href="{{ url_for('catalog') }}" class="text-frag-teal hover:underline font-semibold flex-shrink-0 flex items-center gap-1 text-[11px] ml-4">
-                <span>Abrir el Feed</span>
+                <span>Ver Catálogo (20)</span>
                 <i class="fa-solid fa-angle-right text-[10px]"></i>
             </a>
         </div>
@@ -311,7 +310,6 @@
                         <li><a href="{{ url_for('catalog', genero='Hombre') }}" class="hover:text-frag-teal transition">Perfumes de Hombre (9)</a></li>
                         <li><a href="{{ url_for('catalog', genero='Mujer') }}" class="hover:text-frag-teal transition">Perfumes de Mujer (9)</a></li>
                         <li><a href="{{ url_for('catalog', genero='Unisex') }}" class="hover:text-frag-teal transition">Perfumes Unisex (2)</a></li>
-                        <li><a href="{{ url_for('brands_list') }}" class="hover:text-frag-teal transition">Casas & Diseñadores</a></li>
                     </ul>
                 </div>
 

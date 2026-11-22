@@ -57,74 +57,27 @@ def is_admin():
 
 @app.route('/')
 def index():
-    featured_perfumes = db.get_featured_perfumes(limit=8)
-    recent_perfumes = db.get_perfumes(order_by='newest', limit=12)
-    brands = db.get_all_brands()
+    # Only the actual 20 perfumes in real stock
+    all_perfumes = db.get_perfumes(order_by='name', limit=50)
+    men_perfumes = [p for p in all_perfumes if p['gender'] == 'Hombre']
+    women_perfumes = [p for p in all_perfumes if p['gender'] == 'Mujer']
+    unisex_perfumes = [p for p in all_perfumes if p['gender'] == 'Unisex']
     stats = db.get_stats()
     
     # Real reviews from database
     recent_reviews = db.get_recent_reviews(limit=5)
 
-    # Fragram community lifestyle photos
-    fragram_photos = [
-        {"title": "Colección de Invierno", "author": "Sofia_Perfumes", "img": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&auto=format&fit=crop&q=80"},
-        {"title": "Noche de Baccarat", "author": "Carlos_Scent", "img": "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&auto=format&fit=crop&q=80"},
-        {"title": "Frasco icónico JPG", "author": "Elena_Fragrance", "img": "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=400&auto=format&fit=crop&q=80"},
-        {"title": "Marly & Rosas", "author": "NicheLover", "img": "https://images.unsplash.com/photo-1616949755610-8c9bbc08f138?w=400&auto=format&fit=crop&q=80"},
-        {"title": "Aventus en mano", "author": "KingOfScents", "img": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&auto=format&fit=crop&q=80"}
-    ]
-
-    # Fragrantica Category Pills list
-    category_pills = [
-        "Reseñas Editoriales de Fragancia", "Nuevas Fragancias", "Columnas", "Fragancias Nicho",
-        "Noticias de Fragancias", "Fragancias Vintage", "Arte, Libros y Eventos", "Anuncios de Perfumes",
-        "Materias primas", "Ahora en Tiendas", "Fragancias y Culturas", "Bath & Body",
-        "ENTREVISTAS", "1001 Relatos del Pasado", "Aromas para el Hogar", "Best in Show",
-        "Jardín Fragante", "Fragmentos Perfumísticos", "Fragancias Económicas", "Alimentos y Bebidas",
-        "Perfumes Naturales", "Charlas de Fragrantica", "Fusiones de Sabores", "Perfumistas",
-        "Comprando tu guardarropa de frag", "Guardarropa de fragancias"
-    ]
-
-    # Popular 24 perfumes list
-    popular_24 = [
-        "Liquid Brun French Avenue", "Emporio Armani Stronger", "Khamrah Lattafa", "Supremacy Collector's Edition",
-        "Imagination Louis Vuitton", "Le Male Le Parfum Jean Paul Gaultier", "Khamrah Qahwa Lattafa", "Y Eau de Parfum Yves Saint Laurent",
-        "Club de Nuit Intense Armaf", "Vulcan Feu French Avenue", "Hawas Ice Rasasi", "XJ 1861 Naxos Xerjoff",
-        "Le Male Elixir Jean Paul Gaultier", "Angels' Share By Kilian", "Bois Impérial Essential Parfums", "By the Fireplace Maison Margiela",
-        "MYSLF Eau de Parfum YSL", "Bleu de Chanel Eau de Parfum", "Le Beau Le Parfum Jean Paul Gaultier", "Jazz Club Maison Margiela",
-        "Valentino Uomo Born In Roma", "Tobacco Vanille Tom Ford", "Vibrato Sospiro Perfumes", "Aventus Creed"
-    ]
-
-    # Popular 60 brands list
-    popular_60_brands = [
-        "Lattafa Perfumes", "Dior", "Yves Saint Laurent", "Guerlain", "Giorgio Armani",
-        "French Avenue", "Tom Ford", "Armaf", "Jean Paul Gaultier", "Chanel",
-        "Amouage", "Zara", "Afnan", "Parfums de Marly", "Xerjoff",
-        "Versace", "Dolce&Gabbana", "Maison Alhambra", "Louis Vuitton", "By Kilian",
-        "Rabanne", "Maison Martin Margiela", "PARIS CORNER", "Byredo", "Rasasi",
-        "Carolina Herrera", "Valentino", "Creed", "Diptyque", "Prada",
-        "Givenchy", "Rayhaan", "Natura", "Maison Francis Kurkdjian", "Hermès",
-        "Mancera", "O Boticário", "Bath & Body Works", "Gucci", "Khadlaj Perfumes",
-        "Hugo Boss", "Nishane", "Jo Malone London", "Victoria's Secret", "Lancôme",
-        "Initio Parfums Prives", "Burberry", "Mugler", "Montale", "Kayali Fragrances",
-        "Etat Libre d'Orange", "Ex Nihilo", "Serge Lutens", "Penhaligon's", "Calvin Klein",
-        "Fragrance World", "Bvlgari", "Le Labo", "Azzaro", "Juliette Has A Gun"
-    ]
-
-    # Spotlight Perfume for the Left Hero Banner
-    spotlight_perfume = db.get_perfume_by_slug("bleu-de-chanel") or (featured_perfumes[0] if featured_perfumes else None)
+    # Spotlight Perfume for the Left Hero Banner (from actual stock)
+    spotlight_perfume = db.get_perfume_by_slug("chanel-bleu-de-chanel") or (all_perfumes[0] if all_perfumes else None)
     
     return render_template(
         'index.html',
-        featured_perfumes=featured_perfumes,
-        recent_perfumes=recent_perfumes,
-        brands=brands,
+        all_perfumes=all_perfumes,
+        men_perfumes=men_perfumes,
+        women_perfumes=women_perfumes,
+        unisex_perfumes=unisex_perfumes,
         stats=stats,
         recent_reviews=recent_reviews,
-        fragram_photos=fragram_photos,
-        category_pills=category_pills,
-        popular_24=popular_24,
-        popular_60_brands=popular_60_brands,
         spotlight_perfume=spotlight_perfume
     )
 

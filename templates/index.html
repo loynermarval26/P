@@ -1,15 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}The Fragance´s | Catálogo de Perfumes & Pirámides Olfativas{% endblock %}
+{% block title %}The Fragance´s | Stock Oficial de Perfumes & Pirámides Olfativas{% endblock %}
 
 {% block content %}
-<!-- Atmospheric Ambient Container (with subtle autumn/luxury glow at top edges) -->
+<!-- Atmospheric Ambient Container -->
 <div class="frag-ambient-bg relative pt-6 pb-16">
-    
-    <div class="absolute top-0 left-0 w-64 h-64 bg-rose-600/10 blur-[100px] pointer-events-none -z-10"></div>
-    <div class="absolute top-0 right-0 w-80 h-80 bg-amber-600/15 blur-[120px] pointer-events-none -z-10"></div>
+    <div class="frag-autumn-glow"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <!-- Main 2-Column Grid: Left Content (8 cols) + Right Sidebar (4 cols) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
@@ -17,7 +15,7 @@
             <!-- ================= LEFT COLUMN: MAIN CONTENT (8 COLS) ================= -->
             <div class="lg:col-span-8 space-y-8">
                 
-                <!-- 1. Hero Spotlight Card (Bleu de Chanel / Sauvage / Spotlight) -->
+                <!-- 1. Hero Spotlight Card (Desde el propio stock real) -->
                 {% if spotlight_perfume %}
                 <div class="relative rounded-2xl overflow-hidden border border-frag-border bg-frag-card shadow-2xl group">
                     <div class="relative h-72 sm:h-96 w-full overflow-hidden bg-gradient-to-t from-black via-black/40 to-transparent">
@@ -31,21 +29,21 @@
                         <!-- Top Badge -->
                         <div class="absolute top-4 left-4 flex items-center gap-2">
                             <span class="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider text-slate-300 border border-white/10">
-                                RESEÑAS EDITORIALES DE FRAGANCIA
+                                FRAGANCIA DESTACADA
                             </span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-frag-teal/20 text-frag-teal text-[10px] font-bold border border-frag-teal/30">
-                                En Catálogo
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+                                En Stock Disponible
                             </span>
                         </div>
 
                         <!-- Bottom content -->
                         <div class="absolute bottom-5 left-5 right-5">
                             <span class="text-xs font-bold text-frag-teal uppercase tracking-widest block mb-1">
-                                {{ spotlight_perfume.brand_name }} • {{ spotlight_perfume.presentation or spotlight_perfume.concentration }}
+                                {{ spotlight_perfume.brand_name }} • {{ spotlight_perfume.presentation }}
                             </span>
                             <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white leading-tight">
                                 <a href="{{ url_for('perfume_detail', slug=spotlight_perfume.slug) }}" class="hover:text-frag-teal transition">
-                                    {{ spotlight_perfume.name }}: Carácter, notas olfativas y estela distintiva
+                                    {{ spotlight_perfume.name }}: Carácter, notas olfativas y estela
                                 </a>
                             </h2>
                             <p class="text-xs sm:text-sm text-slate-300 mt-2 line-clamp-2 max-w-2xl font-light">
@@ -57,11 +55,11 @@
                                 <a href="{{ url_for('perfume_detail', slug=spotlight_perfume.slug) }}" class="px-4 py-2 rounded-lg bg-frag-teal text-black font-bold text-xs hover:bg-teal-300 transition">
                                     Ver Pirámide Olfativa
                                 </a>
-                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20me%20interesa%20el%20perfume%20*{{ spotlight_perfume.name|urlencode }}*%20de%20{{ spotlight_perfume.brand_name|urlencode }}%20({{ spotlight_perfume.presentation }}).%20Precio:%20${{ spotlight_perfume.price }}." 
+                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20me%20interesa%20el%20perfume%20*{{ spotlight_perfume.name|urlencode }}*%20de%20{{ spotlight_perfume.brand_name|urlencode }}%20({{ spotlight_perfume.presentation }}).%20Rango:%20{{ spotlight_perfume.price_range or ('$' ~ spotlight_perfume.price) }}." 
                                    target="_blank" 
                                    class="btn-whatsapp px-4 py-2 text-xs">
                                     <i class="fa-brands fa-whatsapp text-sm"></i>
-                                    <span>Pedir por WhatsApp ({{ spotlight_perfume.price_range or ('$' ~ spotlight_perfume.price) }})</span>
+                                    <span>Pedir por WhatsApp ({{ spotlight_perfume.price_range or ('$' ~ "%.2f"|format(spotlight_perfume.price)) }})</span>
                                 </a>
                             </div>
                         </div>
@@ -69,44 +67,39 @@
                 </div>
                 {% endif %}
 
-                <!-- 2. Categorías / Noticias sobre la Categoría (SOLUCIÓN MÓVIL: Carrusel horizontal swipe en móvil, flex-wrap en PC) -->
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="frag-section-title">
-                            <span class="frag-bar-red"></span>
-                            <h3 class="text-base font-bold text-white tracking-wide">Noticias sobre la Categoría</h3>
-                        </div>
-                        <span class="text-[11px] text-slate-400 sm:hidden">
-                            <i class="fa-solid fa-arrows-left-right text-frag-teal mr-1"></i>Desliza
-                        </span>
-                    </div>
-
-                    <!-- En móviles: swipe horizontal compacto (evita el bloque vertical de 26 líneas de texto). En PC: wrap normal -->
-                    <div class="flex sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 scrollbar-none snap-x">
-                        {% for pill in category_pills %}
-                        <a href="{{ url_for('catalog', q=pill.split()[0]) }}" class="frag-pill flex-shrink-0 snap-start">
-                            {{ pill }}
-                        </a>
-                        {% endfor %}
-                    </div>
+                <!-- 2. Filtros Rápidos por Stock Real (20 perfumes) -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    <a href="{{ url_for('catalog') }}" class="px-4 py-2 rounded-xl bg-frag-teal text-black font-extrabold text-xs shadow-md shadow-frag-teal/25 flex-shrink-0">
+                        <i class="fa-solid fa-layer-group mr-1.5"></i>
+                        Todo el Stock ({{ all_perfumes|length }})
+                    </a>
+                    <a href="{{ url_for('catalog', genero='Hombre') }}" class="px-4 py-2 rounded-xl bg-frag-card hover:bg-frag-cardHover text-cyan-400 font-bold text-xs border border-frag-border transition flex-shrink-0">
+                        <i class="fa-solid fa-mars mr-1.5"></i>
+                        Caballeros ({{ men_perfumes|length }})
+                    </a>
+                    <a href="{{ url_for('catalog', genero='Mujer') }}" class="px-4 py-2 rounded-xl bg-frag-card hover:bg-frag-cardHover text-pink-400 font-bold text-xs border border-frag-border transition flex-shrink-0">
+                        <i class="fa-solid fa-venus mr-1.5"></i>
+                        Damas ({{ women_perfumes|length }})
+                    </a>
+                    <a href="{{ url_for('catalog', genero='Unisex') }}" class="px-4 py-2 rounded-xl bg-frag-card hover:bg-frag-cardHover text-amber-400 font-bold text-xs border border-frag-border transition flex-shrink-0">
+                        <i class="fa-solid fa-gem mr-1.5"></i>
+                        Nicho & Unisex ({{ unisex_perfumes|length }})
+                    </a>
                 </div>
 
-                <!-- 3. Nuevas Fragancias del Catálogo (Grid con las 20 del documento oficial) -->
+                <!-- 3. SECCIÓN: PERFUMES PARA CABALLERO (9 FRAGANCIAS EN STOCK) -->
                 <div class="space-y-4 pt-2">
                     <div class="flex items-center justify-between">
                         <div class="frag-section-title">
                             <span class="frag-bar-teal"></span>
-                            <h3 class="text-base font-bold text-white tracking-wide">Fragancias Destacadas en Catálogo</h3>
+                            <h3 class="text-base font-bold text-white tracking-wide">Fragancias de Hombre en Stock (9)</h3>
                         </div>
-                        <a href="{{ url_for('catalog') }}" class="text-xs text-frag-teal hover:underline font-semibold">
-                            Ver todo (20) &rarr;
-                        </a>
+                        <span class="text-xs text-cyan-400 font-semibold hidden sm:inline">Línea Masculina</span>
                     </div>
 
-                    <!-- Grid de frascos oficiales -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {% for p in recent_perfumes[:8] %}
-                        <div class="frag-bottle-card group p-3 flex flex-col justify-between">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+                        {% for p in men_perfumes %}
+                        <div class="frag-bottle-card group p-3.5 flex flex-col justify-between">
                             <div>
                                 <div class="h-44 rounded-xl bg-[#151518] p-3 flex items-center justify-center relative overflow-hidden mb-2.5">
                                     <img 
@@ -127,8 +120,8 @@
                                         {% endif %}
                                     </div>
                                     <div class="absolute top-2 right-2">
-                                        <span class="text-[9px] font-semibold text-slate-400 bg-black/60 px-1.5 py-0.5 rounded">
-                                            {{ p.gender }}
+                                        <span class="text-[9px] font-semibold text-cyan-400 bg-black/60 px-1.5 py-0.5 rounded">
+                                            Hombre
                                         </span>
                                     </div>
                                 </div>
@@ -141,25 +134,23 @@
                                         {{ p.name }}
                                     </a>
                                 </h4>
-                                <div class="text-[10px] text-slate-500 truncate mt-0.5">
+                                <div class="text-[10px] text-slate-400 font-medium truncate mt-0.5">
                                     {{ p.presentation or (p.concentration ~ ' ' ~ p.size_ml ~ 'ml') }}
                                 </div>
                             </div>
 
                             <div class="mt-3 pt-2.5 border-t border-frag-border flex items-center justify-between">
                                 <div>
-                                    <span class="text-xs font-bold text-white block">
-                                        ${{ "%.2f"|format(p.price) }}
+                                    <span class="text-xs font-extrabold text-white block">
+                                        {{ p.price_range or ('$' ~ "%.2f"|format(p.price)) }}
                                     </span>
-                                    {% if p.price_range %}
-                                    <span class="text-[9px] text-slate-400 font-mono block">{{ p.price_range }}</span>
-                                    {% endif %}
                                 </div>
-                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=¡Hola!%20Me%20interesa%20el%20perfume%20*{{ p.name|urlencode }}*%20de%20{{ p.brand_name|urlencode }}%20({{ p.presentation }}).%20Precio:%20${{ p.price }}." 
+                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=¡Hola!%20Me%20interesa%20el%20perfume%20*{{ p.name|urlencode }}*%20de%20{{ p.brand_name|urlencode }}%20({{ p.presentation }}).%20Rango:%20{{ p.price_range or ('$' ~ p.price) }}." 
                                    target="_blank" 
-                                   class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs" 
+                                   class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-center gap-1 font-semibold" 
                                    title="Pedir por WhatsApp">
                                     <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span class="text-[10px]">Pedir</span>
                                 </a>
                             </div>
                         </div>
@@ -167,35 +158,70 @@
                     </div>
                 </div>
 
-                <!-- 4. Fragancias Femeninas & Árabes Virales (Fragancias Añadidas Recientemente) -->
+                <!-- 4. SECCIÓN: PERFUMES PARA DAMA (9 FRAGANCIAS EN STOCK) -->
                 <div class="space-y-4 pt-4">
                     <div class="flex items-center justify-between">
                         <div class="frag-section-title">
                             <span class="frag-bar-red"></span>
-                            <h3 class="text-base font-bold text-white tracking-wide">Selección Femenina & Árabe Viral</h3>
+                            <h3 class="text-base font-bold text-white tracking-wide">Fragancias de Mujer en Stock (9)</h3>
                         </div>
-                        <a href="{{ url_for('catalog', genero='Mujer') }}" class="text-xs text-frag-teal hover:underline font-semibold">
-                            Ver perfumes de mujer &rarr;
-                        </a>
+                        <span class="text-xs text-pink-400 font-semibold hidden sm:inline">Línea Femenina</span>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        {% for p in featured_perfumes[4:8] %}
-                        <div class="frag-bottle-card group p-3 flex flex-col justify-between">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+                        {% for p in women_perfumes %}
+                        <div class="frag-bottle-card group p-3.5 flex flex-col justify-between">
                             <div>
-                                <div class="h-40 rounded-xl bg-[#151518] p-3 flex items-center justify-center relative mb-2">
-                                    <img src="{{ p.image_url }}" alt="{{ p.name }}" class="max-h-32 object-contain group-hover:scale-105 transition duration-300">
+                                <div class="h-44 rounded-xl bg-[#151518] p-3 flex items-center justify-center relative overflow-hidden mb-2.5">
+                                    <img 
+                                        src="{{ p.image_url }}" 
+                                        alt="{{ p.name }}" 
+                                        class="max-h-36 max-w-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md"
+                                        loading="lazy"
+                                    >
+                                    <div class="absolute top-2 left-2">
+                                        {% if p.in_stock == 1 %}
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                                            En Stock
+                                        </span>
+                                        {% else %}
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-950/80 text-rose-400 border border-rose-500/30">
+                                            Agotado
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="absolute top-2 right-2">
+                                        <span class="text-[9px] font-semibold text-pink-400 bg-black/60 px-1.5 py-0.5 rounded">
+                                            Mujer
+                                        </span>
+                                    </div>
                                 </div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">{{ p.brand_name }}</span>
-                                <h4 class="text-xs font-bold text-white truncate group-hover:text-frag-teal">
-                                    <a href="{{ url_for('perfume_detail', slug=p.slug) }}">{{ p.name }}</a>
+
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
+                                    {{ p.brand_name }}
+                                </div>
+                                <h4 class="text-xs font-bold text-white mt-0.5 line-clamp-1 group-hover:text-frag-teal transition">
+                                    <a href="{{ url_for('perfume_detail', slug=p.slug) }}">
+                                        {{ p.name }}
+                                    </a>
                                 </h4>
-                                <span class="text-[10px] text-slate-500 block truncate">{{ p.olfactory_family }}</span>
+                                <div class="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                                    {{ p.presentation or (p.concentration ~ ' ' ~ p.size_ml ~ 'ml') }}
+                                </div>
                             </div>
-                            <div class="mt-2.5 pt-2 border-t border-frag-border flex items-center justify-between text-xs">
-                                <span class="font-bold text-white">${{ "%.2f"|format(p.price) }}</span>
-                                <a href="{{ url_for('perfume_detail', slug=p.slug) }}" class="text-frag-teal text-[11px] font-semibold hover:underline">
-                                    Ver ficha &rarr;
+
+                            <div class="mt-3 pt-2.5 border-t border-frag-border flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-extrabold text-white block">
+                                        {{ p.price_range or ('$' ~ "%.2f"|format(p.price)) }}
+                                    </span>
+                                </div>
+                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=¡Hola!%20Me%20interesa%20el%20perfume%20*{{ p.name|urlencode }}*%20de%20{{ p.brand_name|urlencode }}%20({{ p.presentation }}).%20Rango:%20{{ p.price_range or ('$' ~ p.price) }}." 
+                                   target="_blank" 
+                                   class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-center gap-1 font-semibold" 
+                                   title="Pedir por WhatsApp">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span class="text-[10px]">Pedir</span>
                                 </a>
                             </div>
                         </div>
@@ -203,26 +229,67 @@
                     </div>
                 </div>
 
-                <!-- Galería Visual de Fragancias & Estilo -->
-                <div class="space-y-4 pt-6">
-                    <div class="frag-section-title">
-                        <span class="frag-bar-red"></span>
-                        <h3 class="text-base font-bold text-white tracking-wide">Galería de Fragancias & Estilo</h3>
+                <!-- 5. SECCIÓN: NICHO & UNISEX (2 FRAGANCIAS EN STOCK) -->
+                <div class="space-y-4 pt-4">
+                    <div class="flex items-center justify-between">
+                        <div class="frag-section-title">
+                            <span class="frag-bar-gold"></span>
+                            <h3 class="text-base font-bold text-white tracking-wide">Fragancias Nicho & Unisex en Stock (2)</h3>
+                        </div>
+                        <span class="text-xs text-amber-400 font-semibold hidden sm:inline">Exclusivos</span>
                     </div>
 
-                    <!-- En móvil: swipe horizontal con fotos táctiles; en PC: grid de 5 -->
-                    <div class="flex sm:grid sm:grid-cols-5 gap-3 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 scrollbar-none snap-x">
-                        {% for photo in fragram_photos %}
-                        <div class="group relative rounded-xl overflow-hidden w-40 sm:w-auto flex-shrink-0 aspect-[4/5] bg-frag-card border border-frag-border snap-start">
-                            <img 
-                                src="{{ photo.img }}" 
-                                alt="{{ photo.title }}" 
-                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                                loading="lazy"
-                            >
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-2.5 flex flex-col justify-end">
-                                <span class="text-[11px] font-bold text-white line-clamp-1">{{ photo.title }}</span>
-                                <span class="text-[9px] text-frag-teal font-medium">@{{ photo.author }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% for p in unisex_perfumes %}
+                        <div class="frag-bottle-card group p-4 flex flex-col justify-between">
+                            <div>
+                                <div class="h-44 rounded-xl bg-[#151518] p-3 flex items-center justify-center relative overflow-hidden mb-2.5">
+                                    <img 
+                                        src="{{ p.image_url }}" 
+                                        alt="{{ p.name }}" 
+                                        class="max-h-36 max-w-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md"
+                                        loading="lazy"
+                                    >
+                                    <div class="absolute top-2 left-2">
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                                            En Stock
+                                        </span>
+                                    </div>
+                                    <div class="absolute top-2 right-2">
+                                        <span class="text-[9px] font-semibold text-amber-400 bg-black/60 px-2 py-0.5 rounded">
+                                            Nicho Unisex
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
+                                    {{ p.brand_name }}
+                                </div>
+                                <h4 class="text-sm font-bold text-white mt-0.5 line-clamp-1 group-hover:text-frag-teal transition">
+                                    <a href="{{ url_for('perfume_detail', slug=p.slug) }}">
+                                        {{ p.name }}
+                                    </a>
+                                </h4>
+                                <div class="text-xs text-slate-400 font-medium truncate mt-0.5">
+                                    {{ p.presentation or (p.concentration ~ ' ' ~ p.size_ml ~ 'ml') }}
+                                </div>
+                                <p class="text-xs text-slate-400 mt-2 line-clamp-2">
+                                    {{ p.description }}
+                                </p>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-t border-frag-border flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm font-extrabold text-white block">
+                                        {{ p.price_range or ('$' ~ "%.2f"|format(p.price)) }}
+                                    </span>
+                                </div>
+                                <a href="https://wa.me/{{ settings.whatsapp_number }}?text=¡Hola!%20Me%20interesa%20el%20perfume%20*{{ p.name|urlencode }}*%20de%20{{ p.brand_name|urlencode }}%20({{ p.presentation }}).%20Rango:%20{{ p.price_range or ('$' ~ p.price) }}." 
+                                   target="_blank" 
+                                   class="btn-whatsapp px-3.5 py-1.5 text-xs font-semibold">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pedir por WhatsApp</span>
+                                </a>
                             </div>
                         </div>
                         {% endfor %}
@@ -234,50 +301,58 @@
             <!-- ================= RIGHT COLUMN: SIDEBAR (4 COLS) ================= -->
             <div class="lg:col-span-4 space-y-6">
                 
-                <!-- Sidebar Card 1: Enciclopedia & Comunidad Real -->
+                <!-- Sidebar Card 1: Pedidos por WhatsApp Directo -->
+                <div class="frag-sidebar-card bg-gradient-to-br from-frag-card via-frag-card to-emerald-950/25 border-emerald-500/30 shadow-xl">
+                    <div class="flex items-center gap-2 mb-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>Atención Inmediata</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-1">Pedidos por WhatsApp</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                        Sin carritos de compra. Consulta disponibilidad en tiempo real, fotos del lote y solicita entrega directa:
+                    </p>
+                    <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20quisiera%20asesoría%20sobre%20el%20stock%20disponible%20en%20The%20Fragance´s" 
+                       target="_blank" 
+                       class="btn-whatsapp w-full py-2.5 text-xs font-bold">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>Contactar al +58 424-2567728</span>
+                    </a>
+                </div>
+
+                <!-- Sidebar Card 2: Resumen del Stock Actual -->
                 <div class="frag-sidebar-card shadow-xl">
                     <div class="border-b border-frag-border pb-3 mb-4">
                         <h3 class="text-sm font-bold text-white tracking-wide flex items-center justify-between">
-                            <span>Comunidad & Catálogo</span>
-                            <i class="fa-solid fa-chart-simple text-frag-teal text-xs"></i>
+                            <span>Inventario Disponible</span>
+                            <i class="fa-solid fa-boxes-stacked text-frag-teal text-xs"></i>
                         </h3>
                     </div>
 
                     <div class="space-y-3 text-xs">
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Fragancias en catálogo</span>
-                            <strong class="text-white font-mono text-sm">{{ stats.total_perfumes }}</strong>
+                            <span class="text-slate-400">Total en Stock</span>
+                            <strong class="text-white font-mono text-sm">{{ all_perfumes|length }} Fragancias</strong>
                         </div>
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Casas de perfumería</span>
-                            <strong class="text-white font-mono text-sm">{{ stats.total_brands }}</strong>
+                            <span class="text-slate-400">Línea Caballero</span>
+                            <strong class="text-cyan-400 font-mono text-sm">{{ men_perfumes|length }}</strong>
                         </div>
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Clientes registrados</span>
-                            <strong class="text-frag-teal font-mono text-sm">{{ stats.total_users }}</strong>
+                            <span class="text-slate-400">Línea Dama</span>
+                            <strong class="text-pink-400 font-mono text-sm">{{ women_perfumes|length }}</strong>
                         </div>
                         <div class="flex justify-between items-center text-slate-300">
-                            <span class="text-slate-400">Reseñas de compradores</span>
-                            <strong class="text-amber-400 font-mono text-sm">{{ stats.total_reviews }}</strong>
+                            <span class="text-slate-400">Línea Nicho & Unisex</span>
+                            <strong class="text-amber-400 font-mono text-sm">{{ unisex_perfumes|length }}</strong>
                         </div>
-                    </div>
-
-                    <!-- Call to action for real buyers -->
-                    <div class="mt-4 pt-3 border-t border-frag-border text-[11px] text-slate-400">
-                        <p class="mb-2">¿Ya compraste tu perfume? Deja tu opinión verificada para la comunidad.</p>
-                        {% if not current_user %}
-                        <a href="{{ url_for('user_register') }}" class="block text-center py-1.5 px-3 rounded-lg bg-frag-teal/15 hover:bg-frag-teal/25 text-frag-teal border border-frag-teal/30 font-bold transition">
-                            Crear Cuenta de Cliente
-                        </a>
-                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Sidebar Card 2: Últimas reseñas Reales de Compradores -->
+                <!-- Sidebar Card 3: Últimas Reseñas Reales -->
                 <div class="frag-sidebar-card shadow-xl">
                     <div class="border-b border-frag-border pb-3 mb-4 flex items-center justify-between">
-                        <h3 class="text-sm font-bold text-white tracking-wide">Últimas reseñas</h3>
-                        <span class="text-[10px] text-slate-400">Compradores Reales</span>
+                        <h3 class="text-sm font-bold text-white tracking-wide">Opiniones de Clientes</h3>
+                        <span class="text-[10px] text-slate-400">Reales</span>
                     </div>
 
                     {% if recent_reviews %}
@@ -310,45 +385,20 @@
                         <i class="fa-regular fa-comment-dots text-2xl text-slate-600 block"></i>
                         <p class="text-xs text-slate-300 font-medium">Aún no hay reseñas registradas.</p>
                         <p class="text-[11px] text-slate-500 leading-relaxed">
-                            Conforme los clientes se registren y opinen tras su compra, sus comentarios aparecerán aquí en tiempo real.
+                            Las opiniones de los clientes tras su compra aparecerán aquí en tiempo real.
                         </p>
-                        {% if not current_user %}
-                        <div class="pt-2">
-                            <a href="{{ url_for('user_register') }}" class="inline-block text-xs text-frag-teal hover:underline font-semibold">
-                                + Regístrate para ser el primero &rarr;
-                            </a>
-                        </div>
-                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Sidebar Card 3: Pedidos por WhatsApp Directo -->
-                <div class="frag-sidebar-card bg-gradient-to-br from-frag-card via-frag-card to-emerald-950/20 border-emerald-500/30 shadow-xl">
-                    <div class="flex items-center gap-2 mb-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                        <span>Asesor en Línea</span>
-                    </div>
-                    <h3 class="text-base font-bold text-white mb-1">Pide directamente por WhatsApp</h3>
-                    <p class="text-xs text-slate-300 leading-relaxed mb-4">
-                        ¿Buscas una fragancia o decant? Te enviamos fotos reales del lote, disponibilidad y despachamos de inmediato.
-                    </p>
-                    <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20quisiera%20asesoría%20sobre%20un%20perfume%20en%20The%20Fragance´s" 
-                       target="_blank" 
-                       class="btn-whatsapp w-full py-2.5 text-xs font-bold">
-                        <i class="fa-brands fa-whatsapp text-base"></i>
-                        <span>Contactar al Vendedor</span>
-                    </a>
-                </div>
-
-                <!-- Sidebar Card 4: Notas Olfativas en Tendencia -->
+                <!-- Sidebar Card 4: Notas Olfativas en Stock -->
                 <div class="frag-sidebar-card shadow-xl">
                     <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-seedling text-frag-teal text-xs"></i>
-                        <span>Notas en Tendencia</span>
+                        <span>Buscar por Nota Olfativa</span>
                     </h3>
                     <div class="flex flex-wrap gap-1.5">
-                        {% for note in ['Canela', 'Vainilla', 'Mandarina', 'Lavanda', 'Ambroxan', 'Mango', 'Café', 'Cardamomo', 'Merengue', 'Iris'] %}
+                        {% for note in ['Vainilla', 'Canela', 'Lavanda', 'Mandarina', 'Ambroxan', 'Mango', 'Bergamota', 'Haba Tonka', 'Manzana', 'Pimienta', 'Cedro', 'Ámbar'] %}
                         <a href="{{ url_for('catalog', q=note) }}" class="px-2.5 py-1 rounded-md bg-[#242429] hover:bg-[#303038] text-[11px] text-slate-300 hover:text-frag-teal transition border border-white/5">
                             {{ note }}
                         </a>
@@ -364,104 +414,13 @@
 
 </div>
 
-<!-- ================= SECCIONES INFERIORES: OPTIMIZADAS PARA MÓVIL Y DESKTOP ================= -->
-<section class="border-t border-frag-border bg-[#0e0e10] py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        <!-- 1. Perfumes más populares (SOLUCIÓN MÓVIL: Carrusel visual de tarjetas en móvil, tabla en PC) -->
-        <div>
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-base font-bold text-white">Perfumes más populares</h3>
-                    <p class="text-xs text-slate-400 sm:hidden">Desliza para ver los más buscados</p>
-                </div>
-                <span class="text-xs text-frag-teal font-semibold hidden sm:inline">Top 24 del Momento</span>
-            </div>
-            
-            <!-- Vista Móvil: Slider Horizontal Visual con Frascos y Rankings (NO texto aburrido vertical) -->
-            <div class="sm:hidden flex items-stretch gap-3 overflow-x-auto pb-3 scrollbar-none snap-x">
-                {% for p in recent_perfumes[:8] %}
-                <div class="frag-bottle-card p-3 min-w-[170px] max-w-[170px] flex-shrink-0 snap-start flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-32 bg-[#151518] rounded-lg p-2 mb-2 flex items-center justify-center">
-                            <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-frag-teal/20 text-frag-teal text-[10px] font-bold font-mono">
-                                #{{ loop.index }}
-                            </span>
-                            <img src="{{ p.image_url }}" alt="{{ p.name }}" class="max-h-24 object-contain">
-                        </div>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block truncate">{{ p.brand_name }}</span>
-                        <h4 class="text-xs font-bold text-white line-clamp-1">
-                            <a href="{{ url_for('perfume_detail', slug=p.slug) }}">{{ p.name }}</a>
-                        </h4>
-                    </div>
-                    <div class="mt-2 pt-2 border-t border-frag-border flex items-center justify-between text-xs">
-                        <span class="font-bold text-white">${{ "%.2f"|format(p.price) }}</span>
-                        <a href="https://wa.me/{{ settings.whatsapp_number }}?text=Hola,%20me%20interesa%20{{ p.name|urlencode }}." target="_blank" class="text-emerald-400 text-xs">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Vista Desktop (y desplegable opcional en móvil si se desea ver todos los 24 nombres) -->
-            <div class="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-2.5 text-left text-xs">
-                {% for name in popular_24 %}
-                <div class="flex items-baseline gap-1.5 truncate">
-                    <span class="text-slate-500 font-mono text-[11px] min-w-[20px]">{{ loop.index }}.</span>
-                    <a href="{{ url_for('catalog', q=name.split()[0]) }}" class="text-slate-300 hover:text-frag-teal truncate transition">
-                        {{ name }}
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- 2. Marcas más populares (SOLUCIÓN MÓVIL: Grid visual compacto de 6 marcas principales + botón acordeón) -->
-        <div class="pt-8 border-t border-frag-border">
-            <h3 class="text-base font-bold text-white mb-6">Marcas más populares</h3>
-            
-            <!-- Vista Móvil: Grid visual de las mejores 6 casas con badges (evita 60 líneas verticales de texto) -->
-            <div class="sm:hidden grid grid-cols-2 gap-2 mb-4">
-                {% for b in brands[:6] %}
-                <a href="{{ url_for('brand_detail', slug=b.slug) }}" class="p-3 rounded-xl bg-frag-card border border-frag-border flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-white block">{{ b.name }}</span>
-                        <span class="text-[10px] text-slate-400">{{ b.perfume_count }} fragancia{{ 's' if b.perfume_count != 1 else '' }}</span>
-                    </div>
-                    <i class="fa-solid fa-angle-right text-xs text-frag-teal"></i>
-                </a>
-                {% endfor %}
-            </div>
-
-            <!-- Desplegable elegante para móviles o vista completa en PC -->
-            <details class="sm:open">
-                <summary class="sm:hidden text-xs text-frag-teal font-semibold cursor-pointer py-2 px-3 rounded-lg bg-frag-card border border-frag-border text-center mb-4">
-                    Ver las 60 Casas & Diseñadores ▾
-                </summary>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-2 text-left text-[11px] pt-2">
-                    {% for bname in popular_60_brands %}
-                    <div class="flex items-baseline gap-1.5 truncate">
-                        <span class="text-slate-500 font-mono text-[10px] min-w-[18px]">{{ loop.index }}.</span>
-                        <a href="{{ url_for('catalog', q=bname) }}" class="text-slate-300 hover:text-frag-teal truncate transition">
-                            {{ bname }}
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </details>
-        </div>
-
-        <!-- 3. Botón "Ir al Inicio de la Página" -->
-        <div class="text-center pt-4">
-            <button 
-                onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class="px-8 py-2.5 rounded-lg border border-frag-teal/70 text-frag-teal hover:bg-frag-teal hover:text-black font-semibold text-xs transition duration-200"
-            >
-                Ir al Inicio de la Página
-            </button>
-        </div>
-
-    </div>
-</section>
+<!-- Botón Ir al Inicio -->
+<div class="text-center py-8 bg-[#0e0e10] border-t border-frag-border">
+    <button 
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="px-8 py-2.5 rounded-lg border border-frag-teal/70 text-frag-teal hover:bg-frag-teal hover:text-black font-semibold text-xs transition duration-200"
+    >
+        Ir al Inicio de la Página
+    </button>
+</div>
 {% endblock %}
